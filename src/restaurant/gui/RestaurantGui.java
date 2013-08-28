@@ -94,7 +94,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         
         BufferedImage myPic = null;
         try {
-        	myPic = ImageIO.read(new File ("C:/Users/Sid/workspace/restaurant_sidhartm/src/restaurant/gui/myimg.jpg"));//FIX ME
+        	myPic = ImageIO.read(new File ("myimg.jpg"));//FIX ME
         } catch (IOException e){
         }
         ImageIcon myIcon = new ImageIcon(myPic);
