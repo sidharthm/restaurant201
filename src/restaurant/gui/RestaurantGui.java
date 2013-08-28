@@ -3,8 +3,15 @@ package restaurant.gui;
 import restaurant.CustomerAgent;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.imageio.ImageIO;
+
+import java.io.IOException;
 /**
  * Main GUI class.
  * Contains the main frame and subsequent panels
@@ -31,6 +38,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
 
+    private JPanel myPanel;
     /**
      * Constructor for RestaurantGui class.
      * Sets up all the gui components.
@@ -46,14 +54,15 @@ public class RestaurantGui extends JFrame implements ActionListener {
     	
     	setBounds(50, 50, WINDOWX, WINDOWY);
 
-        setLayout(new BoxLayout((Container) getContentPane(), 
-        		BoxLayout.Y_AXIS));
+       // setLayout(new BoxLayout((Container) getContentPane(), 
+       // 	BoxLayout.Y_AXIS));
+    	setLayout(new BorderLayout());
 
         Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
-        add(restPanel);
+        add(restPanel,BorderLayout.SOUTH);
         
         // Now, setup the info panel
         Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
@@ -73,7 +82,27 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
-        add(infoPanel);
+        add(infoPanel,BorderLayout.CENTER);
+        
+        //setup the user's panel
+        Dimension myDim = new Dimension(WINDOWX,(int) (WINDOWY * .15));
+        myPanel = new JPanel();
+        myPanel.setPreferredSize(myDim);
+        myPanel.setMinimumSize(myDim);
+        myPanel.setMaximumSize(myDim);
+        myPanel.setBorder(BorderFactory.createTitledBorder("Sidharth Menon"));
+        
+        BufferedImage myPic = null;
+        try {
+        	myPic = ImageIO.read(new File ("C:/Users/Sid/workspace/restaurant_sidhartm/src/restaurant/gui/myimg.jpg"));//FIX ME
+        } catch (IOException e){
+        }
+        ImageIcon myIcon = new ImageIcon(myPic);
+        JLabel myLabel = new JLabel(myIcon);
+        myPanel.add(myLabel);
+
+        add(myPanel,BorderLayout.NORTH);
+        
     }
     /**
      * updateInfoPanel() takes the given customer (or, for v3, Host) object and
