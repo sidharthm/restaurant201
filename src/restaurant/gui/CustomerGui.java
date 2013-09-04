@@ -21,13 +21,16 @@ public class CustomerGui implements Gui{
 
 	public static final int xTable = 200;
 	public static final int yTable = 250;
+	public static final int initialX = -40;
+	public static final int initialY = -40;
+	public static final int customerSize = 20;
 
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
 		agent = c;
-		xPos = -40;
-		yPos = -40;
-		xDestination = -40;
-		yDestination = -40;
+		xPos = initialX;
+		yPos = initialY;
+		xDestination = initialX;
+		yDestination = initialY;
 		//maitreD = m;
 		this.gui = gui;
 	}
@@ -57,7 +60,7 @@ public class CustomerGui implements Gui{
 
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
-		g.fillRect(xPos, yPos, 20, 20);
+		g.fillRect(xPos, yPos, customerSize, customerSize);
 	}
 
 	public boolean isPresent() {
@@ -83,8 +86,8 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoExitRestaurant() {
-		xDestination = -40;
-		yDestination = -40;
+		xDestination = initialX;
+		yDestination = initialY;
 		command = Command.LeaveRestaurant;
 	}
 }

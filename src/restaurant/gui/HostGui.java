@@ -9,12 +9,16 @@ import java.awt.*;
 public class HostGui implements Gui {
 
     private HostAgent agent = null;
+    
+    public static final int initialX = -20;
+    public static final int initialY = -20;
 
-    private int xPos = -20, yPos = -20;//default waiter position
-    private int xDestination = -20, yDestination = -20;//default start position
+    private int xPos = initialX, yPos = initialY;//default waiter position
+    private int xDestination = initialX, yDestination = initialY;//default start position
 
     public static final int xTable = 200;
     public static final int yTable = 250;
+    public static final int tableSize = 20;
 
     public HostGui(HostAgent agent) {
         this.agent = agent;
@@ -32,14 +36,14 @@ public class HostGui implements Gui {
             yPos--;
 
         if (xPos == xDestination && yPos == yDestination
-        		& (xDestination == xTable + 20) & (yDestination == yTable - 20)) {
+        		& (xDestination == xTable + tableSize) & (yDestination == yTable - tableSize)) {
            agent.msgAtTable();
         }
     }
 
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
-        g.fillRect(xPos, yPos, 20, 20);
+        g.fillRect(xPos, yPos, tableSize, tableSize);
     }
 
     public boolean isPresent() {
@@ -47,13 +51,13 @@ public class HostGui implements Gui {
     }
 
     public void DoBringToTable(CustomerAgent customer) {
-        xDestination = xTable + 20;
-        yDestination = yTable - 20;
+        xDestination = xTable + tableSize;
+        yDestination = yTable - tableSize;
     }
 
     public void DoLeaveCustomer() {
-        xDestination = -20;
-        yDestination = -20;
+        xDestination = initialX;
+        yDestination = initialY;
     }
 
     public int getXPos() {

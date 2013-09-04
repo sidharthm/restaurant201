@@ -46,13 +46,14 @@ public class RestaurantGui extends JFrame implements ActionListener {
     public RestaurantGui() {
         int WINDOWX = 450;
         int WINDOWY = 350;
+        int BOUND = 50;
 
         animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
+        animationFrame.setBounds(100+WINDOWX, BOUND, WINDOWX+100, WINDOWY+100);
         animationFrame.setVisible(true);
     	animationFrame.add(animationPanel); 
     	
-    	setBounds(50, 50, WINDOWX, WINDOWY);
+    	setBounds(BOUND, BOUND, WINDOWX, WINDOWY);
 
        // setLayout(new BoxLayout((Container) getContentPane(), 
        // 	BoxLayout.Y_AXIS));
