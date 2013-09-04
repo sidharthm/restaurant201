@@ -4,6 +4,7 @@ import restaurant.CustomerAgent;
 import restaurant.HostAgent;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -19,9 +20,12 @@ public class ListPanel extends JPanel implements ActionListener {
             new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     private JPanel view = new JPanel();
+    private JPanel addCustomers = new JPanel();
+   
     private List<JButton> list = new ArrayList<JButton>();
+    private JTextField PersonName = new JTextField("Name");
     private JButton addPersonB = new JButton("Add");
-
+    private JCheckBox stateCB;
     private RestaurantPanel restPanel;
     private String type;
 
@@ -37,9 +41,23 @@ public class ListPanel extends JPanel implements ActionListener {
 
         setLayout(new BoxLayout((Container) this, BoxLayout.Y_AXIS));
         add(new JLabel("<html><pre> <u>" + type + "</u><br></pre></html>"));
+        addCustomers.setLayout(new FlowLayout(FlowLayout.LEFT));
+        PersonName.addActionListener(this);
+        PersonName.setColumns(10);
+        addCustomers.add(PersonName);
 
+        stateCB = new JCheckBox();
+        stateCB.setVisible(true);
+        stateCB.addActionListener(this);
+        addCustomers.add(stateCB);
+        stateCB.setText("Hungry?");
+        stateCB.setEnabled(false);
+        //stateCB.setSelected(customer.getGui().isHungry());
+        //stateCB.setEnabled(!customer.getGui().isHungry());
+     
         addPersonB.addActionListener(this);
-        add(addPersonB);
+        addCustomers.add(addPersonB);
+        add(addCustomers);
 
         view.setLayout(new BoxLayout((Container) view, BoxLayout.Y_AXIS));
         pane.setViewportView(view);
@@ -51,9 +69,21 @@ public class ListPanel extends JPanel implements ActionListener {
      * Handles the event of the add button being pressed
      */
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == addPersonB) {
+    	if (e.getSource() == PersonName){
+    		String result = PersonName.getText();
+    		if (result.equals("Name") || result.equals(null)){
+    			stateCB.setEnabled(false);    		
+    		} else 
+    			stateCB.setEnabled(true);
+    	}else if (e.getSource() == addPersonB) {
         	// Chapter 2.19 describes showInputDialog()
-            addPerson(JOptionPane.showInputDialog("Please enter a name:"));
+            //addPerson(JOptionPane.showInputDialog("Please enter a name:"));
+    		String result = PersonName.getText();
+    		if (!result.equals("Name"))
+    			addPerson(PersonName.getText());
+    		if (stateCB.isSelected()){
+    			list.get((list.size()-1)).doClick();
+    		}
         }
         else {
         	// Isn't the second for loop more beautiful?
