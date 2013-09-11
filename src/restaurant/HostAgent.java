@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
 //the HostAgent. A Host is the manager of a restaurant who sees that all
 //is proceeded as he wishes.
 public class HostAgent extends Agent {
-	static final int NTABLES = 1;//a global for the number of tables.
+	static final int NTABLES = 2;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
 	public List<CustomerAgent> waitingCustomers
@@ -85,7 +85,7 @@ public class HostAgent extends Agent {
             Does there exist a table and customer,
             so that table is unoccupied and customer is waiting.
             If so seat him at the table.
-		 */
+		 */		
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
@@ -104,17 +104,19 @@ public class HostAgent extends Agent {
 	// Actions
 
 	private void seatCustomer(CustomerAgent customer, Table table) {
-		customer.msgSitAtTable();
-		DoSeatCustomer(customer, table);
-		try {
-			atTable.acquire();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (hostGui.atStart()){
+			customer.msgSitAtTable();
+			DoSeatCustomer(customer, table);
+			try {
+				atTable.acquire();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			table.setOccupant(customer);
+			waitingCustomers.remove(customer);
+			hostGui.DoLeaveCustomer();
 		}
-		table.setOccupant(customer);
-		waitingCustomers.remove(customer);
-		hostGui.DoLeaveCustomer();
 	}
 
 	// The animation DoXYZ() routines
@@ -122,7 +124,7 @@ public class HostAgent extends Agent {
 		//Notice how we print "customer" directly. It's toString method will do it.
 		//Same with "table"
 		print("Seating " + customer + " at " + table);
-		hostGui.DoBringToTable(customer); 
+		hostGui.DoBringToTable(customer);
 
 	}
 

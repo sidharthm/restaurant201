@@ -80,7 +80,7 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
-		xDestination = xTable;
+		xDestination = xTable + (seatnumber-1) * 100;
 		yDestination = yTable;
 		command = Command.GoToSeat;
 	}

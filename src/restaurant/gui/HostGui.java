@@ -18,7 +18,8 @@ public class HostGui implements Gui {
 
     public static final int xTable = 200;
     public static final int yTable = 250;
-    public static final int tableSize = 20;
+    public static final int hostSize = 20;
+    public static final int tableSize = 50;
 
     public HostGui(HostAgent agent) {
         this.agent = agent;
@@ -43,7 +44,11 @@ public class HostGui implements Gui {
 
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
-        g.fillRect(xPos, yPos, tableSize, tableSize);
+        g.fillRect(xPos, yPos, hostSize, hostSize);
+        for (int i = 0; i < agent.getTables().size(); i++){
+        	g.setColor(Color.ORANGE);
+        	g.fillRect(xTable + (100*i), yTable, tableSize, tableSize);
+        }
     }
 
     public boolean isPresent() {
@@ -66,5 +71,11 @@ public class HostGui implements Gui {
 
     public int getYPos() {
         return yPos;
+    }
+    
+    public boolean atStart(){
+    		if (xPos == initialX && yPos == initialY)
+    			return true;
+    		return false;
     }
 }
