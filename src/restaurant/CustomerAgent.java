@@ -141,7 +141,7 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		6000);//getHungerLevel() * 1000);//how long to wait before running task
+		25000);//getHungerLevel() * 1000);//how long to wait before running task
 	}
 
 	private void leaveTable() {
