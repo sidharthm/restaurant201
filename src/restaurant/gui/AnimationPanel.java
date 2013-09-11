@@ -42,8 +42,8 @@ public class AnimationPanel extends JPanel implements ActionListener {
         g2.fillRect(0, 0, WINDOWX, WINDOWY );
 
         //Here is the table
-        g2.setColor(Color.ORANGE);
-        g2.fillRect(TABLEX, TABLEY, TABLESIZE, TABLESIZE);//200 and 250 need to be table params
+        //g2.setColor(Color.ORANGE);
+        //g2.fillRect(TABLEX, TABLEY, TABLESIZE, TABLESIZE);//200 and 250 need to be table params
 
 
         for(Gui gui : guis) {

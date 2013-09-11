@@ -13,6 +13,7 @@ import java.util.TimerTask;
 public class CustomerAgent extends Agent {
 	private String name;
 	private int hungerLevel = 5;        // determines length of meal
+	private int tableNum = 1;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 
@@ -118,7 +119,7 @@ public class CustomerAgent extends Agent {
 
 	private void SitDown() {
 		Do("Being seated. Going to table");
-		customerGui.DoGoToSeat(1);//hack; only one table
+		customerGui.DoGoToSeat(tableNum);//hack; only one table
 	}
 
 	private void EatFood() {
@@ -140,7 +141,7 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		5000);//getHungerLevel() * 1000);//how long to wait before running task
+		6000);//getHungerLevel() * 1000);//how long to wait before running task
 	}
 
 	private void leaveTable() {
@@ -175,6 +176,10 @@ public class CustomerAgent extends Agent {
 
 	public CustomerGui getGui() {
 		return customerGui;
+	}
+	
+	public void setTableNum(int n){
+		tableNum = n;
 	}
 }
 
