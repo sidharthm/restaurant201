@@ -58,34 +58,43 @@
 	+ msgSitAtTable(CustomerAgent cust, int tNum){ myCustomers.add(new myCustomer(cust, tNum));}
 	+ msgReadytoOrder(CustomerAgent cust){
 	
-	>  If there exists a myCustomer in myCustomers such that 
-	>		myCustomer.c = cust
-	>	then myCustomer.s = cust.s}
-
+	
+	  If there exists a myCustomer in myCustomers such that 
+			myCustomer.c = cust
+		then myCustomer.s = cust.s}
+		
+	
 	+ msgCustomerOrder(CustomerAgent cust, String choice){
 	
-	>	If there exists a myCustomer in myCustomers such that 
-	>		myCustomer.c = cust
-	>	then myCustomer.choice = cust.choice}
-	>
+	
+		If there exists a myCustomer in myCustomers such that 
+			myCustomer.c = cust
+		then myCustomer.choice = cust.choice}
+	
+	
 	+ msgOrderReady(Order myOrder){
-	  	
-	>	If there exists a Customer in myCustomers such that 
-	>		myCustomer.c = myOrder.c
-	>	then myCustomer.msgOrderReceived();}
 	
+  	
+		If there exists a Customer in myCustomers such that 
+			myCustomer.c = myOrder.c
+		then myCustomer.msgOrderReceived();}
+
+		
 	+ msgLeavingTable(CustomerAgent cust){
-	  	
-	>	If there exists a myCustomer in myCustomers such that 
-	>		myCustomer.c = cust
-	>	then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
+
 	
+		If there exists a myCustomer in myCustomers such that 
+			myCustomer.c = cust
+		then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
+
+		
 3. Scheduler
 
->   If there exists a myCustomer in myCustomers such that  
->		 myCustomer.state = waiting  
->	Then seatCustomer(myCustomer.c, ,myCustomer.t)  
->
+
+   If there exists a myCustomer in myCustomers such that  
+		 myCustomer.state = waiting  
+	Then seatCustomer(myCustomer.c, ,myCustomer.t)  
+
 4. Actions 
 	+ seatCustomer(CustomerAgent customer, int tNum){
 	
