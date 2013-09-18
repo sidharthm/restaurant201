@@ -28,6 +28,7 @@
 2. Messages
   + msgIWantFood(CustomerAgent cust){ waitingCustomers.add(cust); }
   + msgTableCleared(CustomerAgent cust, WaiterAgent wait){
+>
 >	    If there exists a table in tables such that
 >		    table.customer matches cust
 >			    table.setUnoccupied()
@@ -90,7 +91,22 @@
 	>	customer.setTableNum(tNum);
 	>	customer.msgSitAtTable();
 	>	}
-	>
+	
+###Customer 
+
+1. Data
+2. Messages
+	+ gotHungry() - from GUI, sets event to gotHungry
+	+ msgSitAtTable(){  
+	>  Change event to followHost}
+	+ msgWhatisYourOrder(){
+	>  Change event to readyToOrder}
+	+ msgOrderReceived(){
+	>  Change event to Eating}
+3. Scheduler
+>
+>
+	
 ## Class Definitions
 > The Agent implementation requires 5 classes 
 
