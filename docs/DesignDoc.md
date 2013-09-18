@@ -19,10 +19,26 @@
 
 ## Agent Summary 
 ###Host 
-
-Data     | Messages | Scheduler | Actions 
-   a     |     b    |   c       |   d     
-
+>	+ Data
+>		+ List<Customer> waitingCustomers - queue of customers waiting to be seated
+>		+ List<Waiter> availableWaiters - list of waiter available to help customers
+>		+ Collection<Table> tables - all available tables. Table objects can be occupied, and are numbered based on their position in the restaurant
+>	+ Messages
+>		+ msgIWantFood(CustomerAgent cust){ waitingCustomers.add(cust); }
+>		+ msgTableCleared(CustomerAgent cust, WaiterAgent wait){
+>			If there exists a table in tables such that
+>				table.customer matches cust
+>					table.setUnoccupied()
+>					availableWaiters.add(wait)
+>			}
+>	+ Scheduler
+>		If waitingCustomers is not empty &
+>			If there exists a table in tables such that
+>				table.isUnoccupied() & 
+>					If availableWaiters is not empty
+>						availableWaiters.first().msgSitAtTable(waitingCustomers.first, table.getNumber());
+>	+ Actions 
+>		+ None
 
 ## Class Definitions
 > The Agent implementation requires 5 classes 
