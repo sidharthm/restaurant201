@@ -29,9 +29,9 @@
   + msgIWantFood(CustomerAgent cust){ waitingCustomers.add(cust); }
   + msgTableCleared(CustomerAgent cust, WaiterAgent wait){  
        If there exists a table in tables such that  
-	      table.customer matches cust  
-		      table.setUnoccupied()  
-			  availableWaiters.add(wait)  
+		table.customer matches cust  
+				table.setUnoccupied()  
+				availableWaiters.add(wait)  
 
 3. Scheduler 
 >
