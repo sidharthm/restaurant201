@@ -62,19 +62,19 @@
 >	  If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then myCustomer.s = cust.s}		
-	+ msgCustomerOrder(CustomerAgent cust, String choice){
++ msgCustomerOrder(CustomerAgent cust, String choice){
 	
 	
 >		If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then myCustomer.choice = cust.choice}
-	+ msgOrderReady(Order myOrder){
++ msgOrderReady(Order myOrder){
 	
   	
 >		If there exists a Customer in myCustomers such that 
 			myCustomer.c = myOrder.c
 		then myCustomer.msgOrderReceived();}
-	+ msgLeavingTable(CustomerAgent cust){
++ msgLeavingTable(CustomerAgent cust){
 
 	
 >		If there exists a myCustomer in myCustomers such that 
