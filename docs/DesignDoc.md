@@ -61,29 +61,25 @@
 	
 >	  If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
-		then myCustomer.s = cust.s}
-		
+		then myCustomer.s = cust.s}		
 	+ msgCustomerOrder(CustomerAgent cust, String choice){
 	
 	
 >		If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then myCustomer.choice = cust.choice}
-	
 	+ msgOrderReady(Order myOrder){
 	
   	
 >		If there exists a Customer in myCustomers such that 
 			myCustomer.c = myOrder.c
 		then myCustomer.msgOrderReceived();}
-	
 	+ msgLeavingTable(CustomerAgent cust){
 
 	
 >		If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
-		
 3. Scheduler
 
 
