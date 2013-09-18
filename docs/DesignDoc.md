@@ -149,8 +149,16 @@
 	+ OrderFood() - has the customer make a choice and sends that choice to the Host 
 	+ EatFood() - the customer eats the food
 	+ leaveTable() - the customer is done eating, and the GUI can animate him leaving the restaurant
+
+##Cook
+1. Data 
+	+ `List<Order> pendingOrders` - list of Orders that the cook must fill 
 	
-	
+	> class Order{
+	>Waiter w; String c; int t;
+	>}
+2. Messages
+	+ msgHereIsAnOrder(Waiter wait, String choice, int tNum)
 	
 	
 	
