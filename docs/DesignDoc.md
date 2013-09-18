@@ -59,8 +59,8 @@
 	+ msgReadytoOrder(CustomerAgent cust){
 	
 	
-  >	  If there exists a myCustomer in myCustomers such that 
-			myCustomer.c = cust
+  >  	  If there exists a myCustomer in myCustomers such that 
+	   		myCustomer.c = cust
 		then myCustomer.s = cust.s}  
   
 	+ msgCustomerOrder(CustomerAgent cust, String choice){
