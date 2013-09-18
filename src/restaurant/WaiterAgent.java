@@ -48,15 +48,15 @@ public class WaiterAgent extends Agent {
 		
 	}
 	
-	public void msgReadytoOrder(){
+	public void msgReadytoOrder(CustomerAgent cust){
 		
 	}
 	
-	public void msgCustomerOrder(){
+	public void msgCustomerOrder(CustomerAgent cust, String choice){
 		
 	}
 	
-	public void msgOrderReady(){
+	public void msgOrderReady(/*Order is ready*/){
 	}
 
 	public void msgLeavingTable(CustomerAgent cust) {

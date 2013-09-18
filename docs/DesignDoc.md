@@ -18,28 +18,79 @@
 ![alt text](Interaction Diagram v2.png "Interaction Diagram")
 
 ## Agent Summary 
-###Host 
->	+ Data
->		+ List<Customer> waitingCustomers - queue of customers waiting to be seated
->		+ List<Waiter> availableWaiters - list of waiter available to help customers
->		+ Collection<Table> tables - all available tables. Table objects can be occupied, and are numbered based on their position in the restaurant
->	+ Messages
->		+ msgIWantFood(CustomerAgent cust){ waitingCustomers.add(cust); }
->		+ msgTableCleared(CustomerAgent cust, WaiterAgent wait){
->			If there exists a table in tables such that
->				table.customer matches cust
->					table.setUnoccupied()
->					availableWaiters.add(wait)
->			}
->	+ Scheduler
->		If waitingCustomers is not empty &
->			If there exists a table in tables such that
->				table.isUnoccupied() & 
->					If availableWaiters is not empty
->						availableWaiters.first().msgSitAtTable(waitingCustomers.first, table.getNumber());
->	+ Actions 
->		+ None
 
+###Host 
+
+1. Data
+  + `List<Customer> waitingCustomers` - queue of customers waiting to be seated
+  + `List<Waiter> availableWaiters` - list of waiter available to help customers
+  + `Collection<Table>` tables - all available tables
+2. Messages
+  + msgIWantFood(CustomerAgent cust){ waitingCustomers.add(cust); }
+  + msgTableCleared(CustomerAgent cust, WaiterAgent wait){
+>	    If there exists a table in tables such that
+>		    table.customer matches cust
+>			    table.setUnoccupied()
+>			    availableWaiters.add(wait)
+>
+3. Scheduler 
+>
+>		If waitingCustomers is not empty and
+>			If there exists a table in tables such that
+>				table.isUnoccupied() and
+>					If availableWaiters is not empty
+>					 then availableWaiters.first().msgSitAtTable(waitingCustomers.first, table.getNumber());
+>
+4. Actions   
+	None
+
+### Waiter
+
+1. Data
+	+ `List<myCustomer> myCustomers` - list of myCustomer objects that the waiter must serve
+	
+>		class myCustomer{
+>			Customer c; int t; String choice; CustomerState s;
+>		}
+>
+2. Messages 
+	+ msgSitAtTable(CustomerAgent cust, int tNum){ myCustomers.add(new myCustomer(cust, tNum));}
+	+ msgReadytoOrder(CustomerAgent cust){
+	>
+	>	If there exists a myCustomer in myCustomers such that 
+	>		myCustomer.c = cust
+	>	then myCustomer.s = cust.s}
+	>
+	+ msgCustomerOrder(CustomerAgent cust, String choice){
+	>
+	>	If there exists a myCustomer in myCustomers such that 
+	>		myCustomer.c = cust
+	>	then myCustomer.choice = cust.choice}
+	>
+	+ msgOrderReady(Order myOrder){
+	>
+	>	If there exists a Customer in myCustomers such that 
+	>		myCustomer.c = myOrder.c
+	>	then myCustomer.msgOrderReceived();}
+	>
+	+ msgLeavingTable(CustomerAgent cust){
+	>
+	>	If there exists a myCustomer in myCustomers such that 
+	>		myCustomer.c = cust
+	>	then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
+	>
+3. Scheduler
+>
+>   If there exists a myCustomer in myCustomers such that  
+>		 myCustomer.state = waiting  
+>	Then seatCustomer(myCustomer.c, ,myCustomer.t)  
+>
+4. Actions 
+	+ seatCustomer(CustomerAgent customer, int tNum){
+	>	customer.setTableNum(tNum);
+	>	customer.msgSitAtTable();
+	>	}
+	>
 ## Class Definitions
 > The Agent implementation requires 5 classes 
 
