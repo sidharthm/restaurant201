@@ -2,13 +2,13 @@ package restaurant.gui;
 
 
 import restaurant.CustomerAgent;
-import restaurant.HostAgent;
+import restaurant.WaiterAgent;
 
 import java.awt.*;
 
 public class HostGui implements Gui {
 
-    private HostAgent agent = null;
+    private WaiterAgent agent = null;
     
     public static final int initialX = -20;
     public static final int initialY = -20;
@@ -21,7 +21,7 @@ public class HostGui implements Gui {
     public static final int hostSize = 20;
     public static final int tableSize = 50;
 
-    public HostGui(HostAgent agent) {
+    public HostGui(WaiterAgent agent) {
         this.agent = agent;
     }
 

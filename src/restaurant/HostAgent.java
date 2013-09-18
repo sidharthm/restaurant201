@@ -22,6 +22,7 @@ public class HostAgent extends Agent {
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
+	public List<WaiterAgent> availableWaiters = new ArrayList<WaiterAgent>();
 
 	private String name;
 	private Semaphore atTable = new Semaphore(0,true);
@@ -54,43 +55,52 @@ public class HostAgent extends Agent {
 	public Collection getTables() {
 		return tables;
 	}
+	
+	public List getAvailableWaiters() {
+		return availableWaiters;
+	}
 	// Messages
 
+	
 	public void msgIWantFood(CustomerAgent cust) {
 		waitingCustomers.add(cust);
 		stateChanged();
 	}
 
-	public void msgLeavingTable(CustomerAgent cust) {
+	public void msgTableCleared(CustomerAgent cust, WaiterAgent wait) {
 		for (Table table : tables) {
 			if (table.getOccupant() == cust) {
 				print(cust + " leaving " + table);
 				table.setUnoccupied();
+				availableWaiters.add(wait);
 				stateChanged();
 			}
 		}
 	}
-
+/*
 	public void msgAtTable() {//from animation
 		//print("msgAtTable() called");
 		atTable.release();// = true;
 		stateChanged();
 	}
+*/
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */
 	protected boolean pickAndExecuteAnAction() {
 		/* Think of this next rule as:
-            Does there exist a table and customer,
-            so that table is unoccupied and customer is waiting.
+            Does there exist a table and customer, AND waiter
+            so that table is unoccupied and customer is waiting. AND the waiter is not at at able
             If so seat him at the table.
 		 */		
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
-					seatCustomer(waitingCustomers.get(0), table);//the action
-					return true;//return true to the abstract agent to reinvoke the scheduler.
+					if (!availableWaiters.isEmpty()){
+						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action 
+						return true;//return true to the abstract agent to reinvoke the scheduler.
+					}
 				}
 			}
 		}
@@ -102,12 +112,12 @@ public class HostAgent extends Agent {
 	}
 
 	// Actions
-
+/*
 	private void seatCustomer(CustomerAgent customer, Table table) {
 		if (hostGui.atStart()){
 			customer.setTableNum(table.getNumber());
 			customer.msgSitAtTable();
-			DoSeatCustomer(customer, table);
+			DoSeatCustomer(customer, table);//THIS CALL GOES TO WAITER NOW
 			try {
 				atTable.acquire();
 			} catch (InterruptedException e) {
@@ -116,7 +126,7 @@ public class HostAgent extends Agent {
 			}
 			table.setOccupant(customer);
 			waitingCustomers.remove(customer);
-			hostGui.DoLeaveCustomer();
+			hostGui.DoLeaveCustomer();// REMOVE THIS
 		}
 	}
 
@@ -128,7 +138,7 @@ public class HostAgent extends Agent {
 		hostGui.DoBringToTable(customer);
 
 	}
-
+*/
 	//utilities
 
 	public void setGui(HostGui gui) {

@@ -19,6 +19,7 @@ public class CustomerAgent extends Agent {
 
 	// agent correspondents
 	private HostAgent host;
+	private WaiterAgent wait;
 
 	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
@@ -46,6 +47,9 @@ public class CustomerAgent extends Agent {
 	public void setHost(HostAgent host) {
 		this.host = host;
 	}
+	public void setWaiter(WaiterAgent wait){
+		this.wait = wait;
+	}
 
 	public String getCustomerName() {
 		return name;
@@ -62,6 +66,14 @@ public class CustomerAgent extends Agent {
 		print("Received msgSitAtTable");
 		event = AgentEvent.followHost;
 		stateChanged();
+	}
+	
+	public void msgWhatIsYourOrder(){
+		
+	}
+	
+	public void msgOrderReceived(){
+		
 	}
 
 	public void msgAnimationFinishedGoToSeat() {
@@ -146,7 +158,7 @@ public class CustomerAgent extends Agent {
 
 	private void leaveTable() {
 		Do("Leaving.");
-		host.msgLeavingTable(this);
+		wait.msgLeavingTable(this);
 		customerGui.DoExitRestaurant();
 	}
 
