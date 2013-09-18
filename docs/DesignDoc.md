@@ -50,10 +50,10 @@
 1. Data
 	+ `List<myCustomer> myCustomers` - list of myCustomer objects that the waiter must serve
 	
->		class myCustomer{
->			Customer c; int t; String choice; CustomerState s;
->		}
->  
+		`class myCustomer{
+			Customer c; int t; String choice; CustomerState s;
+		}`
+  
 2. Messages 
 	+ msgSitAtTable(CustomerAgent cust, int tNum){ myCustomers.add(new myCustomer(cust, tNum));}
 	+ msgReadytoOrder(CustomerAgent cust){
