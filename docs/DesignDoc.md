@@ -57,7 +57,7 @@
 2. Messages 
 	+ msgSitAtTable(CustomerAgent cust, int tNum){ myCustomers.add(new myCustomer(cust, tNum));}
 	+ msgReadytoOrder(CustomerAgent cust){
-  
+
 	>	If there exists a myCustomer in myCustomers such that 
 	>		myCustomer.c = cust
 	>	then myCustomer.s = cust.s}
@@ -105,8 +105,50 @@
 	+ msgOrderReceived(){
 	>  Change event to Eating}
 3. Scheduler
->
->
+		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry ){
+			state = AgentState.WaitingInRestaurant;
+			goToRestaurant();
+			return true;
+		}
+		if (state == AgentState.WaitingInRestaurant && event == AgentEvent.followHost ){
+			state = AgentState.BeingSeated;
+			SitDown();
+			return true;
+		}
+		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
+			state = AgentState.Ordering;
+			OrderFood();
+			return true;
+		}
+		
+		if (state == AgentState.Ordering && event == AgentEvent.readyToOrder){
+			state = AgentState.Eating;
+			EatFood();
+			return true;
+		}
+
+		if (state == AgentState.Eating && event == AgentEvent.doneEating){
+			state = AgentState.Leaving;
+			leaveTable();
+			return true;
+		}
+		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
+			state = AgentState.DoingNothing;
+			//no action
+			return true;
+		}
+		return false;
+	}
+4. Actions
+	+ goToRestaurant() - tells the Host to seat the customer
+	+ SitDown() - tells the GUI to animate the sitting motion
+	+ OrderFood() - has the customer make a choice and sends that choice to the Host 
+	+ EatFood() - the customer eats the food
+	+ leaveTable() - the customer is done eating, and the GUI can animate him leaving the restaurant
+	
+	
+	
+	
 	
 ## Class Definitions
 > The Agent implementation requires 5 classes 
