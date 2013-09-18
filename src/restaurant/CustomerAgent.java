@@ -27,7 +27,7 @@ public class CustomerAgent extends Agent {
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, doneLeaving};
+	{none, gotHungry, followHost, seated, doneEating, doneLeaving, readyToOrder};
 	AgentEvent event = AgentEvent.none;
 
 	/**
@@ -158,7 +158,7 @@ public class CustomerAgent extends Agent {
 	
 	private void OrderFood(){
 		Do("Ordering food");
-		event = AgentEvent.ordering;
+		event = AgentEvent.readyToOrder;
 	}
 
 	private void leaveTable() {

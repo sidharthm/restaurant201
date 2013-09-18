@@ -158,4 +158,19 @@
 	>Waiter w; String c; int t;
 	>}
 2. Messages
-	+ msgHereIsAnOrder(Waiter wait, String choice, int tNum)
+	+ msgHereIsAnOrder(Waiter wait, String choice, int tNum){
+	
+	> pendingOrders.add(new Order(wait, choice, tNum) }
+	
+3. Scheduler
+
+>	If there exists an order in pendingOrders
+>		CookOrder(order);
+
+4. Actions
+	+CookOrder(Order){
+	
+	>	Do("Cooking");
+	>	timer.schedule(new TimerTask() {
+	>		waiter.OrderisReady(Order)
+	>	},1000);
