@@ -67,7 +67,7 @@
 	>	If there exists a myCustomer in myCustomers such that 
 	>		myCustomer.c = cust
 	>	then myCustomer.choice = cust.choice}
-  
+	>
 	+ msgOrderReady(Order myOrder){
   	
 	>	If there exists a Customer in myCustomers such that 
@@ -81,7 +81,7 @@
 	>	then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
   
 3. Scheduler
->
+
 >   If there exists a myCustomer in myCustomers such that  
 >		 myCustomer.state = waiting  
 >	Then seatCustomer(myCustomer.c, ,myCustomer.t)  
@@ -99,12 +99,16 @@
 2. Messages
 	+ gotHungry() - from GUI, sets event to gotHungry
 	+ msgSitAtTable(){  
+	
 	>  Change event to followHost}
 	+ msgWhatisYourOrder(){
+	
 	>  Change event to readyToOrder}
 	+ msgOrderReceived(){
+	
 	>  Change event to Eating}
-3. Scheduler
+3. Scheduler  
+
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry ){
 			state = AgentState.WaitingInRestaurant;
 			goToRestaurant();
