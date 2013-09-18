@@ -65,6 +65,7 @@
   
 	+ msgCustomerOrder(CustomerAgent cust, String choice){
 	
+	
   >		If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then myCustomer.choice = cust.choice}  
