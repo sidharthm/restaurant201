@@ -29,7 +29,7 @@
   + msgIWantFood(CustomerAgent cust){ waitingCustomers.add(cust); }
   + msgTableCleared(CustomerAgent cust, WaiterAgent wait){  
   
-  >       If there exists a table in tables such that  
+  >     If there exists a table in tables such that  
   >		table.customer matches cust  
   >				table.setUnoccupied()  
   >				availableWaiters.add(wait)  
@@ -59,35 +59,35 @@
 	+ msgReadytoOrder(CustomerAgent cust){
 	
 	
-	  If there exists a myCustomer in myCustomers such that 
+>	  If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then myCustomer.s = cust.s}
 		
 	+ msgCustomerOrder(CustomerAgent cust, String choice){
 	
 	
-		If there exists a myCustomer in myCustomers such that 
+>		If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then myCustomer.choice = cust.choice}
 	
 	+ msgOrderReady(Order myOrder){
 	
   	
-		If there exists a Customer in myCustomers such that 
+>		If there exists a Customer in myCustomers such that 
 			myCustomer.c = myOrder.c
 		then myCustomer.msgOrderReceived();}
 	
 	+ msgLeavingTable(CustomerAgent cust){
 
 	
-		If there exists a myCustomer in myCustomers such that 
+>		If there exists a myCustomer in myCustomers such that 
 			myCustomer.c = cust
 		then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
 		
 3. Scheduler
 
 
-   If there exists a myCustomer in myCustomers such that  
+>   If there exists a myCustomer in myCustomers such that  
 		 myCustomer.state = waiting  
 	Then seatCustomer(myCustomer.c, ,myCustomer.t)  
 
