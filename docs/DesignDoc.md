@@ -57,25 +57,25 @@
 2. Messages 
 	+ msgSitAtTable(CustomerAgent cust, int tNum){ myCustomers.add(new myCustomer(cust, tNum));}
 	+ msgReadytoOrder(CustomerAgent cust){
-	>
+	
 	>	If there exists a myCustomer in myCustomers such that 
 	>		myCustomer.c = cust
 	>	then myCustomer.s = cust.s}
 	>
 	+ msgCustomerOrder(CustomerAgent cust, String choice){
-	>
+	
 	>	If there exists a myCustomer in myCustomers such that 
 	>		myCustomer.c = cust
 	>	then myCustomer.choice = cust.choice}
 	>
 	+ msgOrderReady(Order myOrder){
-	>
+	
 	>	If there exists a Customer in myCustomers such that 
 	>		myCustomer.c = myOrder.c
 	>	then myCustomer.msgOrderReceived();}
 	>
 	+ msgLeavingTable(CustomerAgent cust){
-	>
+	
 	>	If there exists a myCustomer in myCustomers such that 
 	>		myCustomer.c = cust
 	>	then {myCustomers.remove(myCustomer); host.msgTableCleared(cust,this);}
@@ -88,6 +88,7 @@
 >
 4. Actions 
 	+ seatCustomer(CustomerAgent customer, int tNum){
+	
 	>	customer.setTableNum(tNum);
 	>	customer.msgSitAtTable();
 	>	}
