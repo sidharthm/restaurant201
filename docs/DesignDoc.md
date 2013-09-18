@@ -58,8 +58,7 @@
 	+ msgSitAtTable(CustomerAgent cust, int tNum){ myCustomers.add(new myCustomer(cust, tNum));}
 	+ msgReadytoOrder(CustomerAgent cust){
 	
-	
-	>	If there exists a myCustomer in myCustomers such that 
+	>  If there exists a myCustomer in myCustomers such that 
 	>		myCustomer.c = cust
 	>	then myCustomer.s = cust.s}
 
