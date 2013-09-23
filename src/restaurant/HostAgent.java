@@ -25,7 +25,7 @@ public class HostAgent extends Agent {
 	public List<WaiterAgent> availableWaiters = new ArrayList<WaiterAgent>();
 
 	private String name;
-	private Semaphore atTable = new Semaphore(0,true);
+	//private Semaphore atTable = new Semaphore(0,true);
 
 	public HostGui hostGui = null;
 
@@ -91,14 +91,17 @@ public class HostAgent extends Agent {
 	protected boolean pickAndExecuteAnAction() {
 		/* Think of this next rule as:
             Does there exist a table and customer, AND waiter
-            so that table is unoccupied and customer is waiting. AND the waiter is not at at able
+            so that table is unoccupied and customer is waiting. AND the waiter is not at a table
             If so seat him at the table.
 		 */		
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
 					if (!availableWaiters.isEmpty()){
-						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action 
+						waitingCustomers.get(0).setWaiter(availableWaiters.get(0));
+						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
+						availableWaiters.get(0).startThread();
+						availableWaiters.remove(0);
 						return true;//return true to the abstract agent to reinvoke the scheduler.
 					}
 				}
@@ -147,6 +150,10 @@ public class HostAgent extends Agent {
 
 	public HostGui getGui() {
 		return hostGui;
+	}
+	
+	public void addWaiter(WaiterAgent w){
+		availableWaiters.add(w);
 	}
 
 	private class Table {

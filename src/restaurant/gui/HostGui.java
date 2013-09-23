@@ -45,7 +45,7 @@ public class HostGui implements Gui {
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
         g.fillRect(xPos, yPos, hostSize, hostSize);
-        for (int i = 0; i < agent.getTables().size(); i++){
+        for (int i = 0; i < agent.getTableNum(); i++){
         	g.setColor(Color.ORANGE);
         	g.fillRect(xTable + (100*i), yTable, tableSize, tableSize);
         }

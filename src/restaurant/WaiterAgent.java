@@ -44,7 +44,7 @@ public class WaiterAgent extends Agent {
 	public void msgSitAtTable(CustomerAgent cust, int tNum){
 		customer = cust;
 		tableNum = tNum;
-		stateChanged();
+		//stateChanged();
 		
 	}
 	
@@ -81,7 +81,7 @@ public class WaiterAgent extends Agent {
             Does there exist a table and customer,
             so that table is unoccupied and customer is waiting.
             If so seat him at the table.
-		 */		
+		 */	
 		if (!(customer == null)) {
 			seatCustomer(customer, tableNum);//the action
 			return true;//return true to the abstract agent to reinvoke the scheduler.
@@ -114,7 +114,7 @@ public class WaiterAgent extends Agent {
 	private void DoSeatCustomer(CustomerAgent customer, int tNum) {
 		//Notice how we print "customer" directly. It's toString method will do it.
 		//Same with "table"
-		print("Seating " + customer + " at table" + tNum);
+		print("Seating " + customer + " at table " + tNum);
 		hostGui.DoBringToTable(customer);
 
 	}
@@ -127,6 +127,10 @@ public class WaiterAgent extends Agent {
 
 	public HostGui getGui() {
 		return hostGui;
+	}
+	
+	public int getTableNum(){
+		return tableNum;
 	}
 	
 	private class Order{

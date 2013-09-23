@@ -23,7 +23,7 @@ public class CustomerAgent extends Agent {
 
 	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, ordering};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Ordering};
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
@@ -104,9 +104,15 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
-			state = AgentState.Eating;
-			EatFood();
+			state = AgentState.Ordering;
+			OrderFood();
 			return true;
+		}
+		
+		if (state == AgentState.Ordering && event == AgentEvent.readyToOrder){
+		    state = AgentState.Eating;
+		    EatFood();
+		    return true;
 		}
 
 		if (state == AgentState.Eating && event == AgentEvent.doneEating){
