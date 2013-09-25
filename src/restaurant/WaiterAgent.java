@@ -61,6 +61,7 @@ public class WaiterAgent extends Agent {
 	public void msgOrderReceived(CustomerAgent cust, String choice){
 		Do("Okay, I'll bring your " + choice);
 		currentOrder.setMeal(choice);
+		stateChanged();
 	}
 	
 	public void msgOrderReady(String choice, int tNum){
@@ -111,7 +112,7 @@ public class WaiterAgent extends Agent {
 			seatCustomer(customer, tableNum);
 			return true;
 		} else if (customer == null){
-			hostGui.DoLeaveCustomer();
+			LeaveTable();
 			return true;
 		}
 	
@@ -174,7 +175,15 @@ public class WaiterAgent extends Agent {
 			}
 			customer.msgOrderReceived();
 			currentOrder.setTable(0);
+			currentOrder.setMeal("");
+			currentOrder.resetReady();
+			print(currentOrder.getMeal() + " " + currentOrder.getTable());
 			stateChanged();
+	}
+	
+	private void LeaveTable(){
+		if (!hostGui.atStart())
+			hostGui.DoLeaveCustomer();
 	}
 
 	// The animation DoXYZ() routines
@@ -242,6 +251,9 @@ public class WaiterAgent extends Agent {
 		}
 		public void setReady(){
 			ready = true;
+		}
+		public void resetReady(){
+			ready = false;
 		}
 	}
 }

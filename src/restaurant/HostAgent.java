@@ -73,8 +73,8 @@ public class HostAgent extends Agent {
 
 	public void msgTableCleared(CustomerAgent cust, WaiterAgent wait) {
 		for (Table table : tables) {
-			print("clearing " + cust);
 			if (table.getOccupant() == cust) {
+				print("clearing " + cust);
 				print(cust + " leaving " + table);
 				table.setUnoccupied();
 				availableWaiters.add(wait);
@@ -101,7 +101,6 @@ public class HostAgent extends Agent {
 						table.setOccupant(waitingCustomers.get(0));
 						waitingCustomers.get(0).setWaiter(availableWaiters.get(0));
 						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
-						availableWaiters.get(0).startThread();
 						availableWaiters.remove(0);
 						waitingCustomers.remove(0);
 						return true;//return true to the abstract agent to reinvoke the scheduler.
@@ -128,6 +127,7 @@ public class HostAgent extends Agent {
 	
 	public void addWaiter(WaiterAgent w){
 		w.setHost(this);
+		w.startThread();
 		availableWaiters.add(w);
 	}
 

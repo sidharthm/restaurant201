@@ -167,6 +167,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void OrderFood(){
+		print("Choosing food");
 		timer.schedule(new TimerTask() {
 			public void run() {
 				int selection = (int)(Math.random()*1);
@@ -179,6 +180,7 @@ public class CustomerAgent extends Agent {
 						break;
 				}
 				wait.msgReadytoOrder(CustomerAgent.this);
+				print(choice);
 				stateChanged();
 			}
 		},
