@@ -39,6 +39,10 @@ public class HostAgent extends Agent {
 			tables.add(new Table(ix));//how you add to a collections
 		}
 	}
+	
+	public int getNumTables(){
+		return NTABLES;
+	}
 
 	public String getMaitreDName() {
 		return name;
@@ -69,21 +73,16 @@ public class HostAgent extends Agent {
 
 	public void msgTableCleared(CustomerAgent cust, WaiterAgent wait) {
 		for (Table table : tables) {
+			print("clearing " + cust);
 			if (table.getOccupant() == cust) {
 				print(cust + " leaving " + table);
 				table.setUnoccupied();
 				availableWaiters.add(wait);
+				print(availableWaiters.size() + " waiters ready");
 				stateChanged();
 			}
 		}
 	}
-/*
-	public void msgAtTable() {//from animation
-		//print("msgAtTable() called");
-		atTable.release();// = true;
-		stateChanged();
-	}
-*/
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
@@ -98,10 +97,13 @@ public class HostAgent extends Agent {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
 					if (!availableWaiters.isEmpty()){
+						print("Found waiter for " + waitingCustomers.get(0));
+						table.setOccupant(waitingCustomers.get(0));
 						waitingCustomers.get(0).setWaiter(availableWaiters.get(0));
 						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
 						availableWaiters.get(0).startThread();
 						availableWaiters.remove(0);
+						waitingCustomers.remove(0);
 						return true;//return true to the abstract agent to reinvoke the scheduler.
 					}
 				}
@@ -114,34 +116,6 @@ public class HostAgent extends Agent {
 		//and wait.
 	}
 
-	// Actions
-/*
-	private void seatCustomer(CustomerAgent customer, Table table) {
-		if (hostGui.atStart()){
-			customer.setTableNum(table.getNumber());
-			customer.msgSitAtTable();
-			DoSeatCustomer(customer, table);//THIS CALL GOES TO WAITER NOW
-			try {
-				atTable.acquire();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			table.setOccupant(customer);
-			waitingCustomers.remove(customer);
-			hostGui.DoLeaveCustomer();// REMOVE THIS
-		}
-	}
-
-	// The animation DoXYZ() routines
-	private void DoSeatCustomer(CustomerAgent customer, Table table) {
-		//Notice how we print "customer" directly. It's toString method will do it.
-		//Same with "table"
-		print("Seating " + customer + " at " + table);
-		hostGui.DoBringToTable(customer);
-
-	}
-*/
 	//utilities
 
 	public void setGui(HostGui gui) {
@@ -153,6 +127,7 @@ public class HostAgent extends Agent {
 	}
 	
 	public void addWaiter(WaiterAgent w){
+		w.setHost(this);
 		availableWaiters.add(w);
 	}
 

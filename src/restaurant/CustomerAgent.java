@@ -12,6 +12,7 @@ import java.util.TimerTask;
  */
 public class CustomerAgent extends Agent {
 	private String name;
+	private String choice;
 	private int hungerLevel = 5;        // determines length of meal
 	private int tableNum = 1;
 	Timer timer = new Timer();
@@ -27,7 +28,7 @@ public class CustomerAgent extends Agent {
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, doneLeaving, readyToOrder};
+	{none, gotHungry, followHost, seated, doneEating, doneLeaving, gotFood};
 	AgentEvent event = AgentEvent.none;
 
 	/**
@@ -69,11 +70,13 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgWhatIsYourOrder(){
-		
+		wait.msgOrderReceived(this, choice);
+		stateChanged();
 	}
 	
 	public void msgOrderReceived(){
-		
+		event = AgentEvent.gotFood;
+		stateChanged();
 	}
 
 	public void msgAnimationFinishedGoToSeat() {
@@ -109,7 +112,7 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		
-		if (state == AgentState.Ordering && event == AgentEvent.readyToOrder){
+		if (state == AgentState.Ordering && event == AgentEvent.gotFood){
 		    state = AgentState.Eating;
 		    EatFood();
 		    return true;
@@ -142,6 +145,7 @@ public class CustomerAgent extends Agent {
 
 	private void EatFood() {
 		Do("Eating Food");
+		wait.msgImGood();
 		//This next complicated line creates and starts a timer thread.
 		//We schedule a deadline of getHungerLevel()*1000 milliseconds.
 		//When that time elapses, it will call back to the run routine
@@ -159,12 +163,26 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		25000);//getHungerLevel() * 1000);//how long to wait before running task
+		2500);//getHungerLevel() * 1000);//how long to wait before running task
 	}
 	
 	private void OrderFood(){
-		Do("Ordering food");
-		event = AgentEvent.readyToOrder;
+		timer.schedule(new TimerTask() {
+			public void run() {
+				int selection = (int)(Math.random()*1);
+				switch (selection){
+					case 0: 
+						choice = "steak";
+						break;
+					case 1:
+						choice = "chicken";
+						break;
+				}
+				wait.msgReadytoOrder(CustomerAgent.this);
+				stateChanged();
+			}
+		},
+		1000);
 	}
 
 	private void leaveTable() {
@@ -203,6 +221,16 @@ public class CustomerAgent extends Agent {
 	
 	public void setTableNum(int n){
 		tableNum = n;
+	}
+	
+	public int getTableNum(){
+		return tableNum;
+	}
+	
+	public boolean isSeated(){
+		if (event == AgentEvent.seated || event == AgentEvent.gotFood)
+			return true;
+		return false;
 	}
 }
 

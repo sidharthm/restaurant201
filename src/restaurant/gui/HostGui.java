@@ -12,6 +12,8 @@ public class HostGui implements Gui {
     
     public static final int initialX = -20;
     public static final int initialY = -20;
+    public static final int cookX = 450;
+    public static final int cookY = 200;
 
     private int xPos = initialX, yPos = initialY;//default waiter position
     private int xDestination = initialX, yDestination = initialY;//default start position
@@ -36,16 +38,19 @@ public class HostGui implements Gui {
         else if (yPos > yDestination)
             yPos--;
 
-        if (xPos == xDestination && yPos == yDestination
-        		& (xDestination == xTable + tableSize) & (yDestination == yTable - tableSize)) {
-           agent.msgAtTable();
+        if (xPos == xDestination && yPos == yDestination){
+        		if ((xDestination == xTable + tableSize) & (yDestination == yTable - tableSize)) {
+        			agent.msgAtTable();
+        		} else if (xDestination == cookX && yDestination == cookY){
+        			agent.msgAtCook();
+        		}
         }
     }
 
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
         g.fillRect(xPos, yPos, hostSize, hostSize);
-        for (int i = 0; i < agent.getTableNum(); i++){
+        for (int i = 0; i < agent.getNumTotalTables(); i++){
         	g.setColor(Color.ORANGE);
         	g.fillRect(xTable + (100*i), yTable, tableSize, tableSize);
         }
@@ -58,6 +63,11 @@ public class HostGui implements Gui {
     public void DoBringToTable(CustomerAgent customer) {
         xDestination = xTable + tableSize;
         yDestination = yTable - tableSize;
+    }
+    
+    public void DoGoToCook(CustomerAgent customer){
+    	xDestination = cookX;
+    	yDestination = cookY;
     }
 
     public void DoLeaveCustomer() {
@@ -77,5 +87,10 @@ public class HostGui implements Gui {
     		if (xPos == initialX && yPos == initialY)
     			return true;
     		return false;
+    }
+    public boolean atCook(){
+    	if (xPos == cookX && yPos == cookY)
+    		return true;
+    	return false;
     }
 }
