@@ -21,6 +21,7 @@ public class RestaurantPanel extends JPanel {
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
     private HostGui hostGui = new HostGui(waiter);
+    private boolean running = true;
     
 
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
@@ -114,6 +115,31 @@ public class RestaurantPanel extends JPanel {
     		}
     	
     	}
+    }
+    public void pauseRestaurant(){
+    	if (running){
+	    	for (CustomerAgent c:customers){
+	    		c.pauseAgent();
+	    	}
+	    	cook.pauseAgent();
+	    	waiter.pauseAgent();
+	    	host.pauseAgent();
+	    	running = false;
+    	}
+    }
+    public void resumeRestaurant(){
+    	if (!running){
+    		for (CustomerAgent c:customers){
+    			c.resumeAgent();
+    		}
+	    	cook.resumeAgent();
+	    	waiter.resumeAgent();
+	    	host.resumeAgent();
+	    	running = true;
+    	}
+    }
+    public boolean getRunning(){
+    	return running;
     }
 
 }

@@ -20,7 +20,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
     /* The GUI has two frames, the control frame (in variable gui) 
      * and the animation frame, (in variable animationFrame within gui)
      */
-	JFrame animationFrame = new JFrame("Restaurant Animation");
+	//JFrame animationFrame = new JFrame("Restaurant Animation");
 	AnimationPanel animationPanel = new AnimationPanel();
 	
     /* restPanel holds 2 panels
@@ -34,6 +34,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JPanel infoPanel;
     private JLabel infoLabel; //part of infoPanel
     private JCheckBox stateCB;//part of infoLabel
+    private JButton pauseButton;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -44,29 +45,34 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 450;
-        int WINDOWY = 350;
+        int WINDOWX = 900;
+        int WINDOWY = 700;
         int BOUND = 50;
 
-        animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       /* animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         animationFrame.setBounds(100+WINDOWX, BOUND, WINDOWX+100, WINDOWY+100);
         animationFrame.setVisible(true);
-    	animationFrame.add(animationPanel); 
+    	animationFrame.add(animationPanel);*/ 
     	
     	setBounds(BOUND, BOUND, WINDOWX, WINDOWY);
 
        // setLayout(new BoxLayout((Container) getContentPane(), 
        // 	BoxLayout.Y_AXIS));
-    	setLayout(new BorderLayout());
+    	setLayout(new GridBagLayout());
+    	GridBagConstraints c = new GridBagConstraints();
+    	c.anchor = GridBagConstraints.FIRST_LINE_START;
 
-        Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
+        Dimension restDim = new Dimension((int) (WINDOWX*0.5), (int) (WINDOWY*0.35));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
-        add(restPanel,BorderLayout.SOUTH);
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0.75;
+        add(restPanel,c);
         
         // Now, setup the info panel
-        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
+        Dimension infoDim = new Dimension((int) (WINDOWX*0.5), (int) (WINDOWY*0.1));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -83,16 +89,22 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
-        add(infoPanel,BorderLayout.CENTER);
+        c.gridx = 0;
+        c.gridy = 1;
+        c.weightx = 0.5;
+        add(infoPanel,c);
         
         //setup the user's panel
-        Dimension myDim = new Dimension(WINDOWX,(int) (WINDOWY * .15));
+        Dimension myDim = new Dimension((int) (WINDOWX*0.5),(int) (WINDOWY*0.1));
         myPanel = new JPanel();
         myPanel.setPreferredSize(myDim);
         myPanel.setMinimumSize(myDim);
         myPanel.setMaximumSize(myDim);
         myPanel.setBorder(BorderFactory.createTitledBorder("Sidharth Menon"));
         
+        
+        pauseButton = new JButton("Pause");
+        pauseButton.addActionListener(this);
         BufferedImage myPic = null;
         try {
         	myPic = ImageIO.read(new File ("myimg.jpg"));
@@ -101,8 +113,22 @@ public class RestaurantGui extends JFrame implements ActionListener {
         ImageIcon myIcon = new ImageIcon(myPic);
         JLabel myLabel = new JLabel(myIcon);
         myPanel.add(myLabel);
-
-        add(myPanel,BorderLayout.NORTH);
+        myPanel.add(pauseButton);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.weightx = 0.5;
+        add(myPanel,c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
+        c.weighty = 1;
+        
+        c.anchor = GridBagConstraints.PAGE_START;
+        Dimension animDim = new Dimension((int)(WINDOWX * 0.5), (int)(WINDOWY * 0.5));
+        animationPanel.setPreferredSize(animDim);
+        animationPanel.setMinimumSize(animDim);
+        animationPanel.setMaximumSize(animDim);
+        add(animationPanel,c);
         
     }
     /**
@@ -140,6 +166,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
                 c.getGui().setHungry();
                 stateCB.setEnabled(false);
             }
+        } else if (e.getSource() == pauseButton){
+        	if (restPanel.getRunning()){
+        		restPanel.pauseRestaurant();
+        	}else{ 
+        		restPanel.resumeRestaurant();
+        	}
         }
     }
     /**
