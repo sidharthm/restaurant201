@@ -34,6 +34,7 @@ public class CookAgent extends Agent {
 
 	
 	public void msgHereIsAnOrder(WaiterAgent w, String choice, int tNum) {
+		print("Received order for " + choice);
 		pendingOrders.add(new Order(w,choice, tNum));
 		stateChanged();
 	}
@@ -44,6 +45,7 @@ public class CookAgent extends Agent {
 	protected boolean pickAndExecuteAnAction() {
 		if (!(pendingOrders.isEmpty())){
 			CookOrder(pendingOrders.get(0));
+			pendingOrders.remove(0);
 			return true;
 		} else if (!completeOrders.isEmpty()){
 			completeOrders.get(0).getWaiter().msgOrderReady(completeOrders.get(0).getMeal(),completeOrders.get(0).getTable());
@@ -58,6 +60,7 @@ public class CookAgent extends Agent {
 
 	// Actions
 	private void CookOrder(Order o){
+		final Order temp = o;
 		int timeToRun = 0;
 		switch (o.getMeal()){
 			case "steak":
@@ -68,17 +71,15 @@ public class CookAgent extends Agent {
 				break;
 		}
 
-		Order target = pendingOrders.get(0);
-		completeOrders.add(new Order(target.getWaiter(), target.getMeal(),target.getTable()));
-		pendingOrders.remove(0);
-		
 		timer.schedule(new TimerTask() {
 			public void run() {
+				print("Done cooking current meal");
+				completeOrders.add(new Order(temp.getWaiter(), temp.getMeal(),temp.getTable()));
+				stateChanged();
 			}
 		},
 		timeToRun);
-
-		stateChanged();
+		//completeOrders.add(new Order(o.getWaiter(), o.getMeal(),o.getTable()));
 	}
 	//utilities
 

@@ -1,7 +1,7 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.gui.HostGui;
+import restaurant.gui.WaiterGUI;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -26,7 +26,7 @@ public class WaiterAgent extends Agent {
 	private CookAgent cook;
 	private Order currentOrder;
 
-	public HostGui hostGui = null;
+	public WaiterGUI hostGui = null;
 
 	public WaiterAgent(String name) {
 		super();
@@ -54,6 +54,7 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void msgReadytoOrder(CustomerAgent cust){
+		print("Going to " + cust + " to get their order");
 		currentOrder.setTable(cust.getTableNum());
 		stateChanged();
 	}
@@ -151,7 +152,7 @@ public class WaiterAgent extends Agent {
 	
 	private void takeOrderToCook(){
 		if (currentOrder.getMeal() != ""){
-			hostGui.DoGoToCook(customer);
+			hostGui.DoGoToCook();
 			try {
 				atTable.acquire();
 			} catch (InterruptedException e) {
@@ -166,6 +167,13 @@ public class WaiterAgent extends Agent {
 	}
 	
 	private void deliverFood(){
+			hostGui.DoGoToCook();
+			try {
+				atTable.acquire();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			hostGui.DoBringToTable(customer);
 			try {
 				atTable.acquire();
@@ -177,7 +185,6 @@ public class WaiterAgent extends Agent {
 			currentOrder.setTable(0);
 			currentOrder.setMeal("");
 			currentOrder.resetReady();
-			print(currentOrder.getMeal() + " " + currentOrder.getTable());
 			stateChanged();
 	}
 	
@@ -195,11 +202,11 @@ public class WaiterAgent extends Agent {
 
 	//utilities
 
-	public void setGui(HostGui gui) {
+	public void setGui(WaiterGUI gui) {
 		hostGui = gui;
 	}
 
-	public HostGui getGui() {
+	public WaiterGUI getGui() {
 		return hostGui;
 	}
 	

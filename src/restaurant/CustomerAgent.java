@@ -163,14 +163,14 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		2500);//getHungerLevel() * 1000);//how long to wait before running task
+		getHungerLevel() * 1000);//how long to wait before running task
 	}
 	
 	private void OrderFood(){
 		print("Choosing food");
 		timer.schedule(new TimerTask() {
 			public void run() {
-				int selection = (int)(Math.random()*1);
+				int selection = (int)(Math.random()*2);
 				switch (selection){
 					case 0: 
 						choice = "steak";
@@ -180,7 +180,7 @@ public class CustomerAgent extends Agent {
 						break;
 				}
 				wait.msgReadytoOrder(CustomerAgent.this);
-				print(choice);
+				print(selection + " " + choice);
 				stateChanged();
 			}
 		},

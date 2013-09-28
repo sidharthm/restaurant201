@@ -12,9 +12,9 @@ public class AnimationPanel extends JPanel implements ActionListener {
 
     private final int WINDOWX = 450;
     private final int WINDOWY = 350;
-    static final int TABLEX = 200;
-    static final int TABLEY = 250;
-    static final int TABLESIZE = 50;
+    static final int TABLEX = 100;
+    static final int TABLEY = 125;
+    static final int TABLESIZE = 100;
     private Image bufferImage;
     private Dimension bufferSize;
 
@@ -63,9 +63,12 @@ public class AnimationPanel extends JPanel implements ActionListener {
         guis.add(gui);
     }
 
-    public void addGui(HostGui gui) {
+    public void addGui(WaiterGUI gui) {
         guis.add(gui);
     }
     
+    public void addGui(HostGUI gui){
+    	guis.add(gui);
+    }
     
 }

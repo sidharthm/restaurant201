@@ -18,8 +18,8 @@ public class CustomerGui implements Gui{
 	private enum Command {noCommand, GoToSeat, LeaveRestaurant};
 	private Command command=Command.noCommand;
 
-	public static final int xTable = 200;
-	public static final int yTable = 250;
+	public static final int xTable = 100;
+	public static final int yTable = 125;
 	public static final int initialX = -40;
 	public static final int initialY = -40;
 	public static final int customerSize = 20;

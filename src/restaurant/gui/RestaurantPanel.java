@@ -20,24 +20,29 @@ public class RestaurantPanel extends JPanel {
     private WaiterAgent waiter = new WaiterAgent("Sarah");
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
-    private HostGui hostGui = new HostGui(waiter);
+    private WaiterGUI waiterGui = new WaiterGUI(waiter);
+    private HostGUI hostGui = new HostGUI(host);
     private boolean running = true;
     
 
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
+    private Vector<WaiterAgent> waiters = new Vector<WaiterAgent>();
 
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
+    private WaiterPanel waiterPanel = new WaiterPanel(this, "Waiters");
     private JPanel group = new JPanel();
 
     private RestaurantGui gui; //reference to main gui
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
-        waiter.setGui(hostGui);
+        waiter.setGui(waiterGui);
+        host.setGui(hostGui);
         host.addWaiter(waiter);
         waiter.setCook(cook);
 
+        gui.animationPanel.addGui(waiterGui);
         gui.animationPanel.addGui(hostGui);
         host.startThread();
         cook.startThread();
@@ -46,6 +51,7 @@ public class RestaurantPanel extends JPanel {
         group.setLayout(new GridLayout(1, 2, 10, 10));
 
         group.add(customerPanel);
+        group.add(waiterPanel);
 
         initRestLabel();
         add(restLabel);
@@ -106,6 +112,17 @@ public class RestaurantPanel extends JPanel {
     		c.setGui(g);
     		customers.add(c);
     		c.startThread();
+    	} else if (type.equals("Waiters")){
+    		WaiterAgent w = new WaiterAgent(name);
+    		WaiterGUI g = new WaiterGUI(w);
+    		
+    		gui.animationPanel.addGui(g);
+    		w.setHost(host);
+    		w.setGui(g);
+    		w.setCook(cook);
+    		host.addWaiter(w);
+    		waiters.add(w);
+    		w.startThread();
     	}
     }
     public void makeHungry(String name){

@@ -45,34 +45,23 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 900;
+        int WINDOWX = 450;
         int WINDOWY = 700;
-        int BOUND = 50;
-
-       /* animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        animationFrame.setBounds(100+WINDOWX, BOUND, WINDOWX+100, WINDOWY+100);
-        animationFrame.setVisible(true);
-    	animationFrame.add(animationPanel);*/ 
+        int BOUND = 50; 
     	
     	setBounds(BOUND, BOUND, WINDOWX, WINDOWY);
 
-       // setLayout(new BoxLayout((Container) getContentPane(), 
-       // 	BoxLayout.Y_AXIS));
-    	setLayout(new GridBagLayout());
-    	GridBagConstraints c = new GridBagConstraints();
-    	c.anchor = GridBagConstraints.FIRST_LINE_START;
+    	setLayout(new BoxLayout((Container) getContentPane(), BoxLayout.Y_AXIS));
+    	//setLayout(new BoxLayout());
 
-        Dimension restDim = new Dimension((int) (WINDOWX*0.5), (int) (WINDOWY*0.35));
+        Dimension restDim = new Dimension((int) (WINDOWX), (int) (WINDOWY*.25));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0.75;
-        add(restPanel,c);
+        add(restPanel);
         
         // Now, setup the info panel
-        Dimension infoDim = new Dimension((int) (WINDOWX*0.5), (int) (WINDOWY*0.1));
+        Dimension infoDim = new Dimension((int) (WINDOWX), (int) (WINDOWY*.1));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -89,13 +78,16 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
-        c.gridx = 0;
-        c.gridy = 1;
-        c.weightx = 0.5;
-        add(infoPanel,c);
+        add(infoPanel);
+        
+        Dimension animDim = new Dimension((int)(WINDOWX), (int)(WINDOWY*0.45));
+        animationPanel.setPreferredSize(animDim);
+        animationPanel.setMinimumSize(animDim);
+        animationPanel.setMaximumSize(animDim);
+        add(animationPanel);
         
         //setup the user's panel
-        Dimension myDim = new Dimension((int) (WINDOWX*0.5),(int) (WINDOWY*0.1));
+        Dimension myDim = new Dimension((int) (WINDOWX),(int) (WINDOWY*0.2));
         myPanel = new JPanel();
         myPanel.setPreferredSize(myDim);
         myPanel.setMinimumSize(myDim);
@@ -114,21 +106,8 @@ public class RestaurantGui extends JFrame implements ActionListener {
         JLabel myLabel = new JLabel(myIcon);
         myPanel.add(myLabel);
         myPanel.add(pauseButton);
-        c.gridx = 0;
-        c.gridy = 2;
-        c.weightx = 0.5;
-        add(myPanel,c);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.weightx = 1;
-        c.weighty = 1;
+        add(myPanel);
         
-        c.anchor = GridBagConstraints.PAGE_START;
-        Dimension animDim = new Dimension((int)(WINDOWX * 0.5), (int)(WINDOWY * 0.5));
-        animationPanel.setPreferredSize(animDim);
-        animationPanel.setMinimumSize(animDim);
-        animationPanel.setMaximumSize(animDim);
-        add(animationPanel,c);
         
     }
     /**
