@@ -72,11 +72,9 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgTableCleared(CustomerAgent cust, WaiterAgent wait) {
+	public void msgTableCleared(WaiterAgent wait) {
 		for (Table table : tables) {
-			if (table.getOccupant() == cust) {
-				print("clearing " + cust);
-				print(cust + " leaving " + table);
+			if (table.getNumber() == wait.getTableNum()) {
 				table.setUnoccupied();
 				availableWaiters.add(wait);
 				stateChanged();

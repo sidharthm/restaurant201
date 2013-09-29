@@ -15,14 +15,17 @@ public class WaiterAgent extends Agent {
 	
 
 	private String name;
+	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, Done,Leaving};
+	
 	private int tableNum = 0;
+	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
 	private Menu todaysMenu;
 	
 	private Semaphore atTable = new Semaphore(0,true);
 	
 //Other Agents
 	private HostAgent host;
-	private CustomerAgent customer;
+	private myCustomer customer;
 	private CookAgent cook;
 	private Order currentOrder;
 
@@ -48,7 +51,8 @@ public class WaiterAgent extends Agent {
 	// Messages
 
 	public void msgSitAtTable(CustomerAgent cust, int tNum){
-		customer = cust;
+		customers.add(0, new myCustomer(cust,tNum));
+		customer = customers.get(0);
 		tableNum = tNum;
 		stateChanged();
 		
@@ -56,33 +60,32 @@ public class WaiterAgent extends Agent {
 	
 	public void msgReadytoOrder(CustomerAgent cust){
 		print("Going to " + cust + " to get their order");
-		currentOrder.setTable(cust.getTableNum());
 		stateChanged();
 	}
 	
 	public void msgOrderReceived(CustomerAgent cust, String choice){
 		Do("Okay, I'll bring your " + choice);
-		currentOrder.setMeal(choice);
+		customer.setState(CustState.Ordering);
+		customer.makeOrder(choice, customer.getTable());
 		stateChanged();
 	}
 	
 	public void msgOrderReady(String choice, int tNum){
-		currentOrder.setMeal(choice);
-		currentOrder.setTable(tNum);
-		currentOrder.setReady();
+		customer.getOrder().setReady();
+		customer.setState(CustState.Delivering);
 		stateChanged();
 	}
 	
 	public void msgImGood(){
-		customer = null;
+		customer.setState(CustState.Leaving);
 		stateChanged();
 	}
 
 	public void msgLeavingTable(CustomerAgent cust) {
 			print(cust + " leaving table" + tableNum);
-			host.msgTableCleared(cust,WaiterAgent.this);
-			customer = null;
-			tableNum = 0;
+			if (customer.getCustomer() == cust){
+					customers.remove(customer);
+			}
 			stateChanged();
 	}
 
@@ -100,7 +103,27 @@ public class WaiterAgent extends Agent {
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */
 	protected boolean pickAndExecuteAnAction() {
-		if (currentOrder.getTable() != 0){
+		for (myCustomer m:customers){
+			customer = m;
+			if (customer.getState() == CustState.Waiting){
+				seatCustomer(customer.getCustomer(),customer.getTable());
+				return true;
+			} else if (customer.getState() == CustState.Seated){
+				getOrder();
+				return true;
+			} else if (customer.getState() == CustState.Ordering){
+				takeOrderToCook();
+				return true;
+			} else if (customer.getState() == CustState.Delivering){
+				deliverFood();
+				return true;
+			} else if (customer.getState() == CustState.Leaving){
+				host.msgTableCleared(this);
+				LeaveTable();
+				return true;
+			}
+		}
+		/*if (currentOrder.getTable() != 0){
 			if (currentOrder.getMeal() == ""){
 				getOrder();
 			}else{
@@ -114,59 +137,55 @@ public class WaiterAgent extends Agent {
 			seatCustomer(customer, tableNum);
 			return true;
 		} else if (customer == null){
+			host.msgTableCleared(this);
+			tableNum = 0;
 			LeaveTable();
 			return true;
-		}
+		}*/
 	
 		return false;
 	}
 
 	// Actions
 
-	private void seatCustomer(CustomerAgent customer, int tNum) {
+	private void seatCustomer(CustomerAgent cust, int tNum) {
 		if (hostGui.atStart()){
-			customer.setTableNum(tNum);
-			customer.msgSitAtTable(todaysMenu);
-			DoSeatCustomer(customer, tNum);
-			print("seating");
+			cust.setTableNum(tNum);
+			cust.msgSitAtTable(todaysMenu);
+			DoSeatCustomer(cust, tNum);
 			try {
 				atTable.acquire();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			print("leaving");
-			hostGui.DoLeaveCustomer();
+			customer.setState(CustState.Seated);
 		}
 	}
 	
 	private void getOrder(){
-		if(currentOrder.getMeal() == ""){
-			hostGui.DoBringToTable(customer);
-			try {
-				atTable.acquire();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			customer.msgWhatIsYourOrder();
+		hostGui.DoBringToTable(customer.getCustomer());
+		try {
+			atTable.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		customer.getCustomer().msgWhatIsYourOrder();
 	}
 	
 	private void takeOrderToCook(){
-		if (currentOrder.getMeal() != ""){
-			hostGui.DoGoToCook();
-			try {
-				atTable.acquire();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			cook.msgHereIsAnOrder(this,currentOrder.getMeal(), currentOrder.getTable());
-			currentOrder.setMeal("");
-			currentOrder.setTable(0);
-			hostGui.DoLeaveCustomer();
+		print("Taking order to cook");
+		hostGui.DoGoToCook();
+		try {
+			atTable.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		cook.msgHereIsAnOrder(this,customer.getOrder().getMeal(), customer.getOrder().getTable());
+		customer.setState(CustState.WaitingForFood);
+		hostGui.DoLeaveCustomer();
 	}
 	
 	private void deliverFood(){
@@ -177,8 +196,8 @@ public class WaiterAgent extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			hostGui.setPlate(currentOrder.getMeal());
-			hostGui.DoBringToTable(customer);
+			hostGui.setPlate(customer.getOrder().getMeal());
+			hostGui.DoBringToTable(customer.getCustomer());
 			try {
 				atTable.acquire();
 			} catch (InterruptedException e) {
@@ -186,10 +205,8 @@ public class WaiterAgent extends Agent {
 				e.printStackTrace();
 			}
 			hostGui.setPlate("");
-			customer.msgOrderReceived();
-			currentOrder.setTable(0);
-			currentOrder.setMeal("");
-			currentOrder.resetReady();
+			customer.setState(CustState.Done);
+			customer.getCustomer().msgOrderReceived();
 			stateChanged();
 	}
 	
@@ -199,9 +216,9 @@ public class WaiterAgent extends Agent {
 	}
 
 	// The animation DoXYZ() routines
-	private void DoSeatCustomer(CustomerAgent customer, int tNum) {
-		print("Seating " + customer + " at table " + tNum);
-		hostGui.DoBringToTable(customer);
+	private void DoSeatCustomer(CustomerAgent cust, int tNum) {
+		print("Seating " + cust + " at table " + tNum);
+		hostGui.DoBringToTable(cust);
 
 	}
 
@@ -232,6 +249,38 @@ public class WaiterAgent extends Agent {
 		return host.getNumTables();
 	}
 	
+	private class myCustomer{
+		CustomerAgent c;
+		Order o;
+		int t;
+		private CustState s = CustState.Waiting;
+		public myCustomer(CustomerAgent cust, int table){
+			c = cust;
+			t = table;
+		}
+		public CustomerAgent getCustomer(){
+			return c;
+		}
+		public int getTable(){
+			return t;
+		}
+		public Order getOrder(){
+			return o;
+		}
+		public CustState getState(){
+			return s;
+		}
+		public void setTable(int nt){
+			t = nt;
+		}
+		public void setState(CustState ns){
+			s = ns;
+		}
+		public void makeOrder(String c, int t){
+			o = new Order(c,t);
+		}
+	}
+	
 	public class Menu{
 		private ArrayList<String> choices;
 		public Menu(){
@@ -246,7 +295,7 @@ public class WaiterAgent extends Agent {
 				String c = choices.get(n);
 				return c;
 			} else 
-				return null;
+				return "Chicken";
 		}
 	}
 	

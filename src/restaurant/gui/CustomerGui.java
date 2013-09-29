@@ -93,10 +93,11 @@ public class CustomerGui implements Gui{
 		command = Command.LeaveRestaurant;
 	}
 	
-	public void setOrder(String c){
+	public void setOrder(String c,boolean received){
 		if (c.length() > 2){
-			order = c.substring(0,1);
-			order += "?";
+			order = c.substring(0,2);
+			if (!received)
+				order += "?";
 		}else 
 			order = "";
 	}

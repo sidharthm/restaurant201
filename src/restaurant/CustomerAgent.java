@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public class CustomerAgent extends Agent {
 	private String name;
 	private String choice;
-	private int hungerLevel = (int)(Math.random()*4);        // determines length of meal
+	private int hungerLevel = (int)(Math.random()*4);        // determines choice and length of meal
 	private int tableNum = 1;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
@@ -27,11 +27,11 @@ public class CustomerAgent extends Agent {
 
 	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Ordering};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Choosing, Ordering};
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, doneLeaving, gotFood};
+	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneLeaving, gotFood};
 	AgentEvent event = AgentEvent.none;
 
 	/**
@@ -74,7 +74,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgWhatIsYourOrder(){
-		wait.msgOrderReceived(this, choice);
+		//event = AgentEvent.doneChoosing;
 		stateChanged();
 	}
 	
@@ -111,6 +111,12 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
+			state = AgentState.Choosing;
+			ChooseFood();
+			return true;
+		}
+		
+		if (state == AgentState.Choosing && event == AgentEvent.doneChoosing){
 			state = AgentState.Ordering;
 			OrderFood();
 			return true;
@@ -149,7 +155,7 @@ public class CustomerAgent extends Agent {
 
 	private void EatFood() {
 		Do("Eating Food");
-		customerGui.setOrder("");
+		customerGui.setOrder(choice,true);
 		wait.msgImGood();
 		//This next complicated line creates and starts a timer thread.
 		//We schedule a deadline of getHungerLevel()*1000 milliseconds.
@@ -164,25 +170,31 @@ public class CustomerAgent extends Agent {
 			public void run() {
 				print("Done eating, cookie=" + cookie);
 				event = AgentEvent.doneEating;
+				customerGui.setOrder("",true);
 				//isHungry = false;
 				stateChanged();
 			}
 		},
-		getHungerLevel() * 3000);//how long to wait before running task
+		(getHungerLevel() + 1) * 3000);//how long to wait before running task
 	}
 	
-	private void OrderFood(){
+	private void ChooseFood(){
 		print("Choosing food");
 		timer.schedule(new TimerTask() {
 			public void run() {
 				choice = myChoices.getChoice(hungerLevel);
-				customerGui.setOrder(choice);
+				event = AgentEvent.doneChoosing;
+				customerGui.setOrder(choice,false);
 				wait.msgReadytoOrder(CustomerAgent.this);
-				print("I would like " + choice);
 				stateChanged();
 			}
 		},
 		1000);
+	}
+	
+	private void OrderFood(){
+		print("I would like " + choice);
+		wait.msgOrderReceived(this, choice);
 	}
 
 	private void leaveTable() {
