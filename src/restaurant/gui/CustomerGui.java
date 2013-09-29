@@ -15,6 +15,7 @@ public class CustomerGui implements Gui{
 
 	private int xPos, yPos;
 	private int xDestination, yDestination;
+	private String order;
 	private enum Command {noCommand, GoToSeat, LeaveRestaurant};
 	private Command command=Command.noCommand;
 
@@ -30,6 +31,7 @@ public class CustomerGui implements Gui{
 		yPos = initialY;
 		xDestination = initialX;
 		yDestination = initialY;
+		order = "";
 		//maitreD = m;
 		this.gui = gui;
 	}
@@ -60,6 +62,7 @@ public class CustomerGui implements Gui{
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
 		g.fillRect(xPos, yPos, customerSize, customerSize);
+		g.drawString(order,xPos,yPos);
 	}
 
 	public boolean isPresent() {
@@ -88,5 +91,13 @@ public class CustomerGui implements Gui{
 		xDestination = initialX;
 		yDestination = initialY;
 		command = Command.LeaveRestaurant;
+	}
+	
+	public void setOrder(String c){
+		if (c.length() > 2){
+			order = c.substring(0,1);
+			order += "?";
+		}else 
+			order = "";
 	}
 }

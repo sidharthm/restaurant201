@@ -149,6 +149,7 @@ public class CustomerAgent extends Agent {
 
 	private void EatFood() {
 		Do("Eating Food");
+		customerGui.setOrder("");
 		wait.msgImGood();
 		//This next complicated line creates and starts a timer thread.
 		//We schedule a deadline of getHungerLevel()*1000 milliseconds.
@@ -167,7 +168,7 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		getHungerLevel() * 1000);//how long to wait before running task
+		getHungerLevel() * 3000);//how long to wait before running task
 	}
 	
 	private void OrderFood(){
@@ -175,6 +176,7 @@ public class CustomerAgent extends Agent {
 		timer.schedule(new TimerTask() {
 			public void run() {
 				choice = myChoices.getChoice(hungerLevel);
+				customerGui.setOrder(choice);
 				wait.msgReadytoOrder(CustomerAgent.this);
 				print("I would like " + choice);
 				stateChanged();

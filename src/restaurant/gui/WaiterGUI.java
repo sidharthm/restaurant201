@@ -18,6 +18,7 @@ public class WaiterGUI implements Gui {
     private int xPos = initialX, yPos = initialY;//default waiter position
     private int xDestination = initialX, yDestination = initialY;//default start position
     private int tableOffset = 0;
+    private String plate;
 
     public static final int xTable = 100;
     public static final int yTable = 125;
@@ -26,6 +27,7 @@ public class WaiterGUI implements Gui {
 
     public WaiterGUI(WaiterAgent agent) {
         this.agent = agent;
+        plate = "";
     }
 
     public void updatePosition() {
@@ -51,6 +53,8 @@ public class WaiterGUI implements Gui {
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
         g.fillRect(xPos, yPos, hostSize, hostSize);
+        g.drawString(plate, xPos, yPos);
+        
     }
 
     public boolean isPresent() {
@@ -90,5 +94,11 @@ public class WaiterGUI implements Gui {
     	if (xPos == cookX && yPos == cookY)
     		return true;
     	return false;
+    }
+    public void setPlate(String c){
+    	if (c.length() > 2)
+    		plate = c.substring(0, 1);
+    	else 
+    		plate = "";
     }
 }

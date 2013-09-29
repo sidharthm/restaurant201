@@ -177,6 +177,7 @@ public class WaiterAgent extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			hostGui.setPlate(currentOrder.getMeal());
 			hostGui.DoBringToTable(customer);
 			try {
 				atTable.acquire();
@@ -184,6 +185,7 @@ public class WaiterAgent extends Agent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			hostGui.setPlate("");
 			customer.msgOrderReceived();
 			currentOrder.setTable(0);
 			currentOrder.setMeal("");

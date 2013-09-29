@@ -79,7 +79,6 @@ public class HostAgent extends Agent {
 				print(cust + " leaving " + table);
 				table.setUnoccupied();
 				availableWaiters.add(wait);
-				print(availableWaiters.size() + " waiters ready");
 				stateChanged();
 			}
 		}

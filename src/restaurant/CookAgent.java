@@ -63,20 +63,19 @@ public class CookAgent extends Agent {
 		final Order temp = o;
 		int timeToRun = 0;
 		switch (o.getMeal()){
-			case "steak":
+			case "Steak":
 				timeToRun = 3000;
 				break;
-			case "chicken":
+			case "Chicken":
 				timeToRun = 2000;
 				break;
-			case "salad":
+			case "Salad":
 				timeToRun = 1000;
 				break;
-			case "pizza":
+			case "Pizza":
 				timeToRun = 4000;
 				break;
 		}
-
 		timer.schedule(new TimerTask() {
 			public void run() {
 				print("Done cooking current meal");
