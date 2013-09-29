@@ -127,12 +127,14 @@ public class WaiterAgent extends Agent {
 			customer.setTableNum(tNum);
 			customer.msgSitAtTable();
 			DoSeatCustomer(customer, tNum);
+			print("seating");
 			try {
 				atTable.acquire();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			print("leaving");
 			hostGui.DoLeaveCustomer();
 		}
 	}
@@ -228,6 +230,7 @@ public class WaiterAgent extends Agent {
 	}
 	
 	private class Order{
+
 		private int tNum;
 		private String meal;
 		private boolean ready;
@@ -263,4 +266,8 @@ public class WaiterAgent extends Agent {
 			ready = false;
 		}
 	}
+	private class Menu{
+		ArrayList<String> options = new ArrayList<String>();
+	}
 }
+	

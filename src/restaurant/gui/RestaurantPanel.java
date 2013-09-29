@@ -17,10 +17,8 @@ import java.util.Vector;
 public class RestaurantPanel extends JPanel {
 
     //Host, cook, waiters and customers
-    private WaiterAgent waiter = new WaiterAgent("Sarah");
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
-    private WaiterGUI waiterGui = new WaiterGUI(waiter);
     private HostGUI hostGui = new HostGUI(host);
     private boolean running = true;
     
@@ -37,12 +35,8 @@ public class RestaurantPanel extends JPanel {
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
-        waiter.setGui(waiterGui);
         host.setGui(hostGui);
-        host.addWaiter(waiter);
-        waiter.setCook(cook);
 
-        gui.animationPanel.addGui(waiterGui);
         gui.animationPanel.addGui(hostGui);
         host.startThread();
         cook.startThread();
@@ -138,8 +132,10 @@ public class RestaurantPanel extends JPanel {
 	    	for (CustomerAgent c:customers){
 	    		c.pauseAgent();
 	    	}
+	    	for (WaiterAgent w:waiters){
+	    		w.pauseAgent();
+	    	}
 	    	cook.pauseAgent();
-	    	waiter.pauseAgent();
 	    	host.pauseAgent();
 	    	running = false;
     	}
@@ -149,8 +145,10 @@ public class RestaurantPanel extends JPanel {
     		for (CustomerAgent c:customers){
     			c.resumeAgent();
     		}
+    		for (WaiterAgent w:waiters){
+    			w.resumeAgent();
+    		}
 	    	cook.resumeAgent();
-	    	waiter.resumeAgent();
 	    	host.resumeAgent();
 	    	running = true;
     	}

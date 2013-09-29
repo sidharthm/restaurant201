@@ -17,6 +17,7 @@ public class WaiterGUI implements Gui {
 
     private int xPos = initialX, yPos = initialY;//default waiter position
     private int xDestination = initialX, yDestination = initialY;//default start position
+    private int tableOffset = 0;
 
     public static final int xTable = 100;
     public static final int yTable = 125;
@@ -39,7 +40,7 @@ public class WaiterGUI implements Gui {
             yPos--;
 
         if (xPos == xDestination && yPos == yDestination){
-        		if ((xDestination == xTable + tableSize) & (yDestination == yTable - tableSize)) {
+        		if ((xDestination == xTable + tableOffset + tableSize) & (yDestination == yTable - tableSize)) {
         			agent.msgAtTable();
         		} else if (xDestination == cookX && yDestination == cookY){
         			agent.msgAtCook();
@@ -57,7 +58,8 @@ public class WaiterGUI implements Gui {
     }
 
     public void DoBringToTable(CustomerAgent customer) {
-        xDestination = (xTable + ((customer.getTableNum()-1) * 100)) + tableSize;
+    	tableOffset = ((customer.getTableNum()-1) * 100);
+        xDestination = (xTable + tableOffset) + tableSize;
         yDestination = yTable - tableSize;
     }
     

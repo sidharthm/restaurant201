@@ -67,6 +67,7 @@ public class HostAgent extends Agent {
 
 	
 	public void msgIWantFood(CustomerAgent cust) {
+		print ("Finding waiter for " + cust);
 		waitingCustomers.add(cust);
 		stateChanged();
 	}
@@ -129,6 +130,7 @@ public class HostAgent extends Agent {
 		w.setHost(this);
 		w.startThread();
 		availableWaiters.add(w);
+		stateChanged();
 	}
 
 	private class Table {
