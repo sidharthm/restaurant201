@@ -3,7 +3,9 @@ package restaurant;
 import restaurant.gui.CustomerGui;
 import restaurant.gui.RestaurantGui;
 import agent.Agent;
+import restaurant.WaiterAgent.Menu;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,7 +15,7 @@ import java.util.TimerTask;
 public class CustomerAgent extends Agent {
 	private String name;
 	private String choice;
-	private int hungerLevel = 5;        // determines length of meal
+	private int hungerLevel = (int)(Math.random()*4);        // determines length of meal
 	private int tableNum = 1;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
@@ -21,6 +23,7 @@ public class CustomerAgent extends Agent {
 	// agent correspondents
 	private HostAgent host;
 	private WaiterAgent wait;
+	private Menu myChoices;
 
 	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
@@ -58,13 +61,14 @@ public class CustomerAgent extends Agent {
 	// Messages
 
 	public void gotHungry() {//from animation
-		print("I'm hungry");
+		print("I'm hungry [" + hungerLevel + "]");
 		event = AgentEvent.gotHungry;
 		stateChanged();
 	}
 
-	public void msgSitAtTable() {
+	public void msgSitAtTable(Menu m) {
 		print("Received msgSitAtTable");
+		myChoices = m;
 		event = AgentEvent.followHost;
 		stateChanged();
 	}
@@ -170,17 +174,9 @@ public class CustomerAgent extends Agent {
 		print("Choosing food");
 		timer.schedule(new TimerTask() {
 			public void run() {
-				int selection = (int)(Math.random()*2);
-				switch (selection){
-					case 0: 
-						choice = "steak";
-						break;
-					case 1:
-						choice = "chicken";
-						break;
-				}
+				choice = myChoices.getChoice(hungerLevel);
 				wait.msgReadytoOrder(CustomerAgent.this);
-				print(selection + " " + choice);
+				print("I would like " + choice);
 				stateChanged();
 			}
 		},
@@ -234,5 +230,6 @@ public class CustomerAgent extends Agent {
 			return true;
 		return false;
 	}
+	
 }
 

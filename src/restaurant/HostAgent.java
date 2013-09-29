@@ -132,7 +132,7 @@ public class HostAgent extends Agent {
 		availableWaiters.add(w);
 		stateChanged();
 	}
-
+	
 	private class Table {
 		CustomerAgent occupiedBy;
 		int tableNumber;

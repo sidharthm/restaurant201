@@ -16,7 +16,7 @@ public class WaiterAgent extends Agent {
 
 	private String name;
 	private int tableNum = 0;
-	
+	private Menu todaysMenu;
 	
 	private Semaphore atTable = new Semaphore(0,true);
 	
@@ -33,6 +33,7 @@ public class WaiterAgent extends Agent {
 
 		this.name = name;
 		currentOrder = new Order("",0);
+		todaysMenu = new Menu();
 		
 	}
 
@@ -125,7 +126,7 @@ public class WaiterAgent extends Agent {
 	private void seatCustomer(CustomerAgent customer, int tNum) {
 		if (hostGui.atStart()){
 			customer.setTableNum(tNum);
-			customer.msgSitAtTable();
+			customer.msgSitAtTable(todaysMenu);
 			DoSeatCustomer(customer, tNum);
 			print("seating");
 			try {
@@ -229,6 +230,24 @@ public class WaiterAgent extends Agent {
 		return host.getNumTables();
 	}
 	
+	public class Menu{
+		private ArrayList<String> choices;
+		public Menu(){
+			choices = new ArrayList<String>();
+			choices.add("Steak");
+			choices.add("Chicken");
+			choices.add("Salad");
+			choices.add("Pizza");
+		}
+		public String getChoice(int n){
+			if (n < choices.size()){
+				String c = choices.get(n);
+				return c;
+			} else 
+				return null;
+		}
+	}
+	
 	private class Order{
 
 		private int tNum;
@@ -265,9 +284,6 @@ public class WaiterAgent extends Agent {
 		public void resetReady(){
 			ready = false;
 		}
-	}
-	private class Menu{
-		ArrayList<String> options = new ArrayList<String>();
 	}
 }
 	

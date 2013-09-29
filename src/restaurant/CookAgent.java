@@ -67,7 +67,13 @@ public class CookAgent extends Agent {
 				timeToRun = 3000;
 				break;
 			case "chicken":
+				timeToRun = 2000;
+				break;
+			case "salad":
 				timeToRun = 1000;
+				break;
+			case "pizza":
+				timeToRun = 4000;
 				break;
 		}
 
