@@ -48,7 +48,9 @@ public class CookAgent extends Agent {
 			pendingOrders.remove(0);
 			return true;
 		} else if (!completeOrders.isEmpty()){
-			completeOrders.get(0).getWaiter().msgOrderReady(completeOrders.get(0).getMeal(),completeOrders.get(0).getTable());
+			Order send = completeOrders.get(0);
+			send.getWaiter().msgOrderReady(send.getMeal(),send.getTable());
+			send = null;
 			completeOrders.remove(0);
 			return true;
 		}
