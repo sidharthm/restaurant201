@@ -99,7 +99,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         pauseButton.addActionListener(this);
         BufferedImage myPic = null;
         try {
-        	myPic = ImageIO.read(new File ("myimg.jpg"));
+        	myPic = ImageIO.read(new File ("..\\restaurant_sidhartm\\src\\restaurant\\gui\\myimage.jpg"));
         } catch (IOException e){
         }
         ImageIcon myIcon = new ImageIcon(myPic);
