@@ -51,9 +51,9 @@ public class WaiterAgent extends Agent {
 	// Messages
 
 	public void msgSitAtTable(CustomerAgent cust, int tNum){
-		customers.add(0, new myCustomer(cust,tNum));
-		customer = customers.get(0);
-		tableNum = tNum;
+		customers.add(new myCustomer(cust,tNum));
+		if (customers.size() == 1)
+				customer = customers.get(0);
 		stateChanged();
 		
 	}
@@ -71,20 +71,34 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void msgOrderReady(String choice, int tNum){
-		customer.getOrder().setReady();
-		customer.setState(CustState.Delivering);
+		if (tNum == customer.getTable()){
+			customer.getOrder().setReady();
+			customer.setState(CustState.Delivering);
+		} else {
+			for (myCustomer m :customers){
+				if (m.getTable() == tNum){
+					m.getOrder().setReady();
+					m.setState(CustState.Delivering);
+				}
+			}
+		}
 		stateChanged();
 	}
 	
 	public void msgImGood(){
-		customer.setState(CustState.Leaving);
+		customer.setState(CustState.Done); //Implemented later, in case we need to return to the customer
 		stateChanged();
 	}
 
 	public void msgLeavingTable(CustomerAgent cust) {
-			print(cust + " leaving table" + tableNum);
 			if (customer.getCustomer() == cust){
-					customers.remove(customer);
+				print(cust + " leaving table " + cust.getTableNum());
+				customer.setState(CustState.Leaving);
+			} else {
+				for (myCustomer m: customers){
+					if (m.getCustomer() == cust)
+						m.setState(CustState.Leaving);
+				}
 			}
 			stateChanged();
 	}
@@ -104,7 +118,6 @@ public class WaiterAgent extends Agent {
 	 */
 	protected boolean pickAndExecuteAnAction() {
 		for (myCustomer m:customers){
-			customer = m;
 			if (customer.getState() == CustState.Waiting){
 				seatCustomer(customer.getCustomer(),customer.getTable());
 				return true;
@@ -117,32 +130,18 @@ public class WaiterAgent extends Agent {
 			} else if (customer.getState() == CustState.Delivering){
 				deliverFood();
 				return true;
+			} else if (customer.getState() == CustState.Done){
+				LeaveTable();
 			} else if (customer.getState() == CustState.Leaving){
-				host.msgTableCleared(this);
+				host.msgTableCleared(this,customer.getTable(),customers.size());
+				customers.remove(customer);
+				if (customers.isEmpty())
+					customer = null;
 				LeaveTable();
 				return true;
 			}
+			customer = m;
 		}
-		/*if (currentOrder.getTable() != 0){
-			if (currentOrder.getMeal() == ""){
-				getOrder();
-			}else{
-				if (currentOrder.getReadiness())
-					deliverFood();
-				else 
-					takeOrderToCook();
-			}
-			return true;
-		} else if (!(customer == null) && !customer.isSeated()) {
-			seatCustomer(customer, tableNum);
-			return true;
-		} else if (customer == null){
-			host.msgTableCleared(this);
-			tableNum = 0;
-			LeaveTable();
-			return true;
-		}*/
-	
 		return false;
 	}
 

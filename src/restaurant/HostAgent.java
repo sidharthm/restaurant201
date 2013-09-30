@@ -23,6 +23,7 @@ public class HostAgent extends Agent {
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
 	public List<WaiterAgent> availableWaiters = new ArrayList<WaiterAgent>();
+	public List<WaiterAgent> busyWaiters = new ArrayList<WaiterAgent>();
 
 	private String name;
 	//private Semaphore atTable = new Semaphore(0,true);
@@ -72,11 +73,15 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgTableCleared(WaiterAgent wait) {
+	public void msgTableCleared(WaiterAgent wait, int tN, int cs) {
 		for (Table table : tables) {
-			if (table.getNumber() == wait.getTableNum()) {
+			if (table.getNumber() == tN) {
 				table.setUnoccupied();
-				availableWaiters.add(wait);
+				if (cs == 1){
+					availableWaiters.add(wait);
+					busyWaiters.remove(wait);
+					print (availableWaiters.size() + " free waiters");
+				}
 				stateChanged();
 			}
 		}
@@ -99,9 +104,15 @@ public class HostAgent extends Agent {
 						table.setOccupant(waitingCustomers.get(0));
 						waitingCustomers.get(0).setWaiter(availableWaiters.get(0));
 						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
+						busyWaiters.add(availableWaiters.get(0));
 						availableWaiters.remove(0);
 						waitingCustomers.remove(0);
 						return true;//return true to the abstract agent to reinvoke the scheduler.
+					} else if (!busyWaiters.isEmpty()){
+						print("Couldn't find available waiter, adding " + waitingCustomers.get(0));
+						waitingCustomers.get(0).setWaiter(busyWaiters.get(0));
+						busyWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
+						waitingCustomers.remove(0);
 					}
 				}
 			}

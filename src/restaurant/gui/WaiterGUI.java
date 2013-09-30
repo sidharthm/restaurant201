@@ -97,7 +97,7 @@ public class WaiterGUI implements Gui {
     }
     public void setPlate(String c){
     	if (c.length() > 2)
-    		plate = c.substring(0, 1);
+    		plate = c.substring(0, 2);
     	else 
     		plate = "";
     }
