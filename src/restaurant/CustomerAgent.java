@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public class CustomerAgent extends Agent {
 	private String name;
 	private String choice;
-	private int hungerLevel = (int)(Math.random()*4);        // determines choice and length of meal
+	private int hungerLevel = 0; //(int)(Math.random()*4);        // determines choice and length of meal
 	private int tableNum = 1;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
@@ -31,7 +31,7 @@ public class CustomerAgent extends Agent {
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneLeaving, gotFood};
+	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneLeaving, gotFood, pickAgain};
 	AgentEvent event = AgentEvent.none;
 
 	/**
@@ -73,8 +73,15 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void msgWhatIsYourOrder(){
+	public void msgWhatIsYourOrder(Menu m){
 		//event = AgentEvent.doneChoosing;
+		//print("menu updated");
+		myChoices = m;
+		stateChanged();
+	}
+	
+	public void msgPickAgain(){
+		event = AgentEvent.pickAgain;
 		stateChanged();
 	}
 	
@@ -115,10 +122,15 @@ public class CustomerAgent extends Agent {
 			ChooseFood();
 			return true;
 		}
-		
 		if (state == AgentState.Choosing && event == AgentEvent.doneChoosing){
 			state = AgentState.Ordering;
 			OrderFood();
+			return true;
+		}
+		
+		if (state == AgentState.Ordering && event == AgentEvent.pickAgain){
+			state = AgentState.Choosing;
+			ChooseFood();
 			return true;
 		}
 		
@@ -182,7 +194,11 @@ public class CustomerAgent extends Agent {
 		print("Choosing food");
 		timer.schedule(new TimerTask() {
 			public void run() {
-				choice = myChoices.getChoice(hungerLevel);
+				do {
+					choice = myChoices.getChoice(hungerLevel);
+					if (choice.equals("Out"))
+						hungerLevel = (int)(Math.random() * 4);
+				} while (choice.equals("Out"));
 				event = AgentEvent.doneChoosing;
 				customerGui.setOrder(choice,false);
 				wait.msgReadytoOrder(CustomerAgent.this);

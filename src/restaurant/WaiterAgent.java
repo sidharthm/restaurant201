@@ -15,7 +15,7 @@ public class WaiterAgent extends Agent {
 	
 
 	private String name;
-	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, Done,Leaving};
+	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, Done,Leaving, OrderAgain};
 	
 	private int tableNum = 0;
 	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
@@ -70,6 +70,18 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
+	public void msgOutOfChoice(String i){
+		todaysMenu.removeChoice(i);
+		for (myCustomer m:customers){
+			if (m.getOrder().getMeal().equals(i)){
+				print (m.getCustomer() + " needs to order again");
+				//m.getCustomer().msgPickAgain();
+				m.setState(CustState.OrderAgain);
+			}
+		}
+		stateChanged();
+	}
+	
 	public void msgOrderReady(String choice, int tNum){
 		if (tNum == customer.getTable()){
 			customer.getOrder().setReady();
@@ -102,6 +114,10 @@ public class WaiterAgent extends Agent {
 			}
 			stateChanged();
 	}
+	
+	public void WantToBreak(){
+		
+	}
 
 	public void msgAtTable() {//from animation
 		atTable.release();// = true;
@@ -121,7 +137,7 @@ public class WaiterAgent extends Agent {
 			if (customer.getState() == CustState.Waiting){
 				seatCustomer(customer.getCustomer(),customer.getTable());
 				return true;
-			} else if (customer.getState() == CustState.Seated){
+			} else if (customer.getState() == CustState.Seated || customer.getState() == CustState.OrderAgain){
 				getOrder();
 				return true;
 			} else if (customer.getState() == CustState.Ordering){
@@ -170,7 +186,10 @@ public class WaiterAgent extends Agent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		customer.getCustomer().msgWhatIsYourOrder();
+		if (customer.getState() == CustState.OrderAgain){
+			customer.getCustomer().msgPickAgain();
+		}
+		customer.getCustomer().msgWhatIsYourOrder(todaysMenu);
 	}
 	
 	private void takeOrderToCook(){
@@ -284,17 +303,36 @@ public class WaiterAgent extends Agent {
 		private ArrayList<String> choices;
 		public Menu(){
 			choices = new ArrayList<String>();
-			choices.add("Steak");
-			choices.add("Chicken");
-			choices.add("Salad");
-			choices.add("Pizza");
+			choices.add("Steak");//0
+			choices.add("Chicken");//1
+			choices.add("Salad");//2
+			choices.add("Pizza");//3
 		}
 		public String getChoice(int n){
 			if (n < choices.size()){
 				String c = choices.get(n);
 				return c;
 			} else 
-				return "Chicken";
+				return "Out";
+		}
+		public void removeChoice(String c){
+			int n = choices.indexOf(c);
+			choices.set(n, "Out");
+		}
+		public void addChoice(String c){
+			for (String s: choices){
+				if (s.equals(c)){
+					int n = choices.indexOf(c);
+					String item = "Out"; 
+					switch (n){
+						case 0: item = "Steak"; break;
+						case 1: item = "Chicken"; break;
+						case 2: item = "Salad"; break;
+						case 3: item = "Pizza"; break;
+					}
+					choices.set(n, item);
+				}
+			}
 		}
 	}
 	

@@ -14,6 +14,7 @@ public class CookAgent extends Agent {
 	public List<Order> completeOrders = new ArrayList<Order>();
 
 	private String name;
+	private Inventory myStock = new Inventory(0,1,1,1);
 	private Semaphore cooking = new Semaphore(0,true);
 	Timer timer = new Timer();
 
@@ -62,31 +63,36 @@ public class CookAgent extends Agent {
 
 	// Actions
 	private void CookOrder(Order o){
-		final Order temp = o;
-		int timeToRun = 0;
-		switch (o.getMeal()){
-			case "Steak":
-				timeToRun = 3000;
-				break;
-			case "Chicken":
-				timeToRun = 2000;
-				break;
-			case "Salad":
-				timeToRun = 1000;
-				break;
-			case "Pizza":
-				timeToRun = 4000;
-				break;
-		}
-		timer.schedule(new TimerTask() {
-			public void run() {
-				print("Done cooking current meal");
-				completeOrders.add(new Order(temp.getWaiter(), temp.getMeal(),temp.getTable()));
-				stateChanged();
+		if (myStock.useStock(o.getMeal())){
+			final Order temp = o;
+			int timeToRun = 0;
+			switch (o.getMeal()){
+				case "Steak":
+					timeToRun = 3000;
+					break;
+				case "Chicken":
+					timeToRun = 2000;
+					break;
+				case "Salad":
+					timeToRun = 1000;
+					break;
+				case "Pizza":
+					timeToRun = 4000;
+					break;
 			}
-		},
-		timeToRun);
-		//completeOrders.add(new Order(o.getWaiter(), o.getMeal(),o.getTable()));
+			timer.schedule(new TimerTask() {
+				public void run() {
+					print("Done cooking current meal");
+					completeOrders.add(new Order(temp.getWaiter(), temp.getMeal(),temp.getTable()));
+					stateChanged();
+				}
+			},
+			timeToRun);
+		} else {
+			print("We're out of " + o.getMeal());
+			o.getWaiter().msgOutOfChoice(o.getMeal());
+		}
+			//completeOrders.add(new Order(o.getWaiter(), o.getMeal(),o.getTable()));
 	}
 	//utilities
 
@@ -111,6 +117,34 @@ public class CookAgent extends Agent {
 		
 		public WaiterAgent getWaiter(){
 			return myW;
+		}
+	}
+	private class Inventory{
+		private Map <String,Integer> stock;
+		
+		public Inventory(Integer s, Integer c, Integer sa, Integer p){
+			stock = new HashMap <String,Integer>();
+			stock.put("Steak",s);
+			stock.put("Chicken",c);
+			stock.put("Salad", sa);
+			stock.put("Pizza", p);
+		}
+		
+		public void setStock(String item, Integer num){
+			if (stock.containsKey(item))
+				stock.put(item,num);
+		}
+		
+		public int getStock(String item){
+			return stock.get(item);
+		}
+		
+		public boolean useStock(String item){
+			if (stock.get(item) > 0){
+				stock.put(item, stock.get(item)-1);
+				return true;
+			}
+			return false;
 		}
 	}
 }
