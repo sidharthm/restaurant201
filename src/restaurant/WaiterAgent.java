@@ -1,6 +1,7 @@
 package restaurant;
 
 import agent.Agent;
+import restaurant.CustomerAgent.AgentEvent;
 import restaurant.gui.WaiterGUI;
 
 import java.util.*;
@@ -15,11 +16,14 @@ public class WaiterAgent extends Agent {
 	
 
 	private String name;
+	private boolean breakable = false;
+	private boolean onBreak = false;
 	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, Done,Leaving, OrderAgain};
 	
 	private int tableNum = 0;
 	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
 	private Menu todaysMenu;
+	private Timer breakTimer = new Timer();
 	
 	private Semaphore atTable = new Semaphore(0,true);
 	
@@ -54,6 +58,8 @@ public class WaiterAgent extends Agent {
 		customers.add(new myCustomer(cust,tNum));
 		if (customers.size() == 1)
 				customer = customers.get(0);
+		if (name.equals("OnB"))
+			WantToBreak();
 		stateChanged();
 		
 	}
@@ -75,7 +81,6 @@ public class WaiterAgent extends Agent {
 		for (myCustomer m:customers){
 			if (m.getOrder().getMeal().equals(i)){
 				print (m.getCustomer() + " needs to order again");
-				//m.getCustomer().msgPickAgain();
 				m.setState(CustState.OrderAgain);
 			}
 		}
@@ -103,20 +108,26 @@ public class WaiterAgent extends Agent {
 	}
 
 	public void msgLeavingTable(CustomerAgent cust) {
-			if (customer.getCustomer() == cust){
-				print(cust + " leaving table " + cust.getTableNum());
-				customer.setState(CustState.Leaving);
-			} else {
-				for (myCustomer m: customers){
-					if (m.getCustomer() == cust)
-						m.setState(CustState.Leaving);
-				}
+		if (customer.getCustomer() == cust){
+			print(cust + " leaving table " + cust.getTableNum());
+			customer.setState(CustState.Leaving);
+		} else {
+			for (myCustomer m: customers){
+				if (m.getCustomer() == cust)
+					m.setState(CustState.Leaving);
 			}
-			stateChanged();
+		}
+		stateChanged();
 	}
 	
-	public void WantToBreak(){
-		
+	public void msgGoOnBreak(){
+		breakable = true;
+		stateChanged();
+	}
+	
+	public void WantToBreak(){//from GUI
+		print("Can I take a break?");
+		host.msgIWantABreak(this);
 	}
 
 	public void msgAtTable() {//from animation
@@ -134,6 +145,8 @@ public class WaiterAgent extends Agent {
 	 */
 	protected boolean pickAndExecuteAnAction() {
 		for (myCustomer m:customers){
+			if (onBreak)
+				return true;
 			if (customer.getState() == CustState.Waiting){
 				seatCustomer(customer.getCustomer(),customer.getTable());
 				return true;
@@ -157,6 +170,10 @@ public class WaiterAgent extends Agent {
 				return true;
 			}
 			customer = m;
+		}
+		if (breakable){
+			goOnBreak();
+			return true;
 		}
 		return false;
 	}
@@ -231,6 +248,22 @@ public class WaiterAgent extends Agent {
 	private void LeaveTable(){
 		if (!hostGui.atStart())
 			hostGui.DoLeaveCustomer();
+	}
+	
+	private void goOnBreak(){
+		hostGui.DoLeaveCustomer();
+		onBreak = true;
+		print("I'm on break");
+		breakTimer.schedule(new TimerTask() {
+			public void run() {
+				print("I'm done with my break");
+				onBreak = false;
+				breakable  = false;
+				stateChanged();
+				host.msgImBack(WaiterAgent.this);
+			}
+		},
+		10000);
 	}
 
 	// The animation DoXYZ() routines

@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public class CustomerAgent extends Agent {
 	private String name;
 	private String choice;
-	private int hungerLevel = 0; //(int)(Math.random()*4);        // determines choice and length of meal
+	private int hungerLevel = (int)(Math.random()*4);        // determines choice and length of meal
 	private int tableNum = 1;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;

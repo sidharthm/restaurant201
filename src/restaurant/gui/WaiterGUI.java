@@ -101,4 +101,8 @@ public class WaiterGUI implements Gui {
     	else 
     		plate = "";
     }
+    
+    public void WantBreak(){
+    	agent.WantToBreak();
+    }
 }

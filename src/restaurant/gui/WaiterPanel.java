@@ -99,7 +99,7 @@ public class WaiterPanel extends JPanel implements ActionListener {
             list.add(button);
             view.add(button);
             restPanel.addPerson(type, name);//puts wait on list
-            //restPanel.showInfo(type, name);//puts hungry button on panel
+            restPanel.showInfo(type, name);//puts hungry button on panel
             validate();
         	PersonName.setText("Name");
         }

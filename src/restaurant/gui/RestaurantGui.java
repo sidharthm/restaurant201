@@ -1,6 +1,7 @@
 package restaurant.gui;
 
 import restaurant.CustomerAgent;
+import restaurant.WaiterAgent;
 
 import javax.swing.*;
 
@@ -130,6 +131,13 @@ public class RestaurantGui extends JFrame implements ActionListener {
           // Hack. Should ask customerGui
             infoLabel.setText(
                "<html><pre>     Name: " + customer.getName() + " </pre></html>");
+        } else if (person instanceof WaiterAgent){
+        	WaiterAgent waiter = (WaiterAgent) person;
+        	stateCB.setText("Break?");
+        	stateCB.setSelected(false);
+        	stateCB.setEnabled(true);
+        	infoLabel.setText(
+               "<html><pre>     Name: " + waiter.getName() + " </pre></html>");
         }
         infoPanel.validate();
     }
@@ -144,6 +152,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
                 CustomerAgent c = (CustomerAgent) currentPerson;
                 c.getGui().setHungry();
                 stateCB.setEnabled(false);
+            } else if (currentPerson instanceof WaiterAgent){
+            	WaiterAgent w = (WaiterAgent) currentPerson;
+            	w.getGui().WantBreak();
+            	stateCB.setEnabled(false);
             }
         } else if (e.getSource() == pauseButton){
         	if (restPanel.getRunning()){

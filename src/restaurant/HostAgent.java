@@ -72,6 +72,24 @@ public class HostAgent extends Agent {
 		waitingCustomers.add(cust);
 		stateChanged();
 	}
+	
+	public void msgIWantABreak(WaiterAgent w){
+		if (availableWaiters.size() > 1 || busyWaiters.size() > 1){
+			print ("Adding you to wait queue");
+			w.msgGoOnBreak();
+			if (availableWaiters.contains(w))
+				availableWaiters.remove(w);
+			if (busyWaiters.contains(w))
+				busyWaiters.remove(w);
+		} else {
+			print ("I can't let you break");
+		}
+	}
+	
+	public void msgImBack(WaiterAgent w){
+		availableWaiters.add(w);
+		stateChanged();
+	}
 
 	public void msgTableCleared(WaiterAgent wait, int tN, int cs) {
 		for (Table table : tables) {

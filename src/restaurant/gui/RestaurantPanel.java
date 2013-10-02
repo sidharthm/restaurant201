@@ -86,6 +86,12 @@ public class RestaurantPanel extends JPanel {
                 if (temp.getName() == name)
                     gui.updateInfoPanel(temp);
             }
+        } else if (type.equals("Waiters")){
+        	for (int i = 0; i < waiters.size(); i++){
+        		WaiterAgent temp = waiters.get(i);
+        		if (temp.getName() == name)
+        			gui.updateInfoPanel(temp);
+        	}
         }
     }
 
