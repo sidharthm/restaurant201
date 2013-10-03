@@ -19,7 +19,7 @@ public class RestaurantPanel extends JPanel {
     //Host, cook, waiters and customers
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
-    private HostGUI hostGui = new HostGUI(host);
+    private HostGui hostGui = new HostGui(host);
     private boolean running = true;
     
 

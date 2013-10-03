@@ -4,7 +4,7 @@ import restaurant.HostAgent;
 
 import java.awt.*;
 
-public class HostGUI implements Gui {
+public class HostGui implements Gui {
 
     private HostAgent agent = null;
     
@@ -12,7 +12,7 @@ public class HostGUI implements Gui {
     public static final int yTable = 125;
     public static final int tableSize = 50;
 
-    public HostGUI(HostAgent agent) {
+    public HostGui(HostAgent agent) {
         this.agent = agent;
     }
 
