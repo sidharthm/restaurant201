@@ -18,7 +18,7 @@ public class WaiterAgent extends Agent {
 	private String name;
 	private boolean breakable = false;
 	private boolean onBreak = false;
-	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, Done,Leaving, OrderAgain};
+	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, WaitingForBill, WaitingForCashier, Paying, Done,Leaving, OrderAgain, None};
 	
 	private int tableNum = 0;
 	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
@@ -31,6 +31,7 @@ public class WaiterAgent extends Agent {
 	private HostAgent host;
 	private myCustomer customer;
 	private CookAgent cook;
+	private CashierAgent cashier;
 	private Order currentOrder;
 
 	public WaiterGUI hostGui = null;
@@ -102,10 +103,48 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
+	public void msgIWantCheck(CustomerAgent c){
+		for (myCustomer m: customers){
+			if (m.getCustomer() == c){
+				m.setState(CustState.WaitingForBill);
+				stateChanged();
+			}
+		}
+	}
+	
+	public void msgHereIsTheBill(double value, int tNum){
+		print("Got bill for table " + tNum);
+		if (tNum == customer.getTable()){
+			customer.chargeBill(value);
+			customer.setState(CustState.Paying);
+			stateChanged();
+		} else { 
+			for (myCustomer m: customers){
+				if (m.getTable() == tNum){
+					m.chargeBill(value);
+					m.setState(CustState.Paying);
+					stateChanged();
+				}
+			}
+		}
+	}
+	
+	public void msgHereIsCash(CustomerAgent c, double value){
+		print("Got " + value + " from " + c);
+		for (myCustomer m: customers){
+			if (m.getCustomer() == c){
+				m.payBill(value);
+				m.getCustomer().msgHereIsChange(0.01);
+				m.setState(CustState.Done);
+			}
+		}
+	}
+	
 	public void msgImGood(){
 		customer.setState(CustState.Done); //Implemented later, in case we need to return to the customer
 		stateChanged();
 	}
+	
 
 	public void msgLeavingTable(CustomerAgent cust) {
 		if (customer.getCustomer() == cust){
@@ -158,6 +197,12 @@ public class WaiterAgent extends Agent {
 				return true;
 			} else if (customer.getState() == CustState.Delivering){
 				deliverFood();
+				return true;
+			} else if (customer.getState() == CustState.WaitingForBill){
+				getBill();
+				return true;
+			} else if (customer.getState() == CustState.Paying){
+				takeBill();
 				return true;
 			} else if (customer.getState() == CustState.Done){
 				LeaveTable();
@@ -240,9 +285,30 @@ public class WaiterAgent extends Agent {
 				e.printStackTrace();
 			}
 			hostGui.setPlate("");
-			customer.setState(CustState.Done);
+			customer.setState(CustState.None);
 			customer.getCustomer().msgOrderReceived();
 			stateChanged();
+	}
+	
+	private void getBill(){
+		if (!hostGui.atStart()){
+			hostGui.DoLeaveCustomer();
+		} else{
+			cashier.msgHereIsBill(this, customer.getOrder().getMeal(), customer.getTable());
+			customer.setState(CustState.WaitingForCashier);
+		}
+	}
+	
+	private void takeBill(){
+		customer.setState(CustState.WaitingForCashier);
+		hostGui.DoBringToTable(customer.getCustomer());
+		try {
+			atTable.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		customer.getCustomer().msgHereIsCheck(customer.getMoneyOwed());
 	}
 	
 	private void LeaveTable(){
@@ -296,6 +362,11 @@ public class WaiterAgent extends Agent {
 		host = h;
 	}
 	
+	public void setCashier(CashierAgent c){
+		
+		cashier = c;
+	}
+	
 	public int getNumTotalTables(){
 		return host.getNumTables();
 	}
@@ -303,11 +374,13 @@ public class WaiterAgent extends Agent {
 	private class myCustomer{
 		CustomerAgent c;
 		Order o;
+		private double moneyOwed;
 		int t;
 		private CustState s = CustState.Waiting;
 		public myCustomer(CustomerAgent cust, int table){
 			c = cust;
 			t = table;
+			moneyOwed = 0;
 		}
 		public CustomerAgent getCustomer(){
 			return c;
@@ -329,6 +402,15 @@ public class WaiterAgent extends Agent {
 		}
 		public void makeOrder(String c, int t){
 			o = new Order(c,t);
+		}
+		public void chargeBill(double v){
+			moneyOwed += v;
+		}
+		public void payBill(double v){
+			moneyOwed -= v;
+		}
+		public double getMoneyOwed(){
+			return moneyOwed;
 		}
 	}
 	

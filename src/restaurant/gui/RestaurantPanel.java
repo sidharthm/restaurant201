@@ -5,6 +5,7 @@ import restaurant.HostAgent;
 import restaurant.WaiterAgent;
 import restaurant.CookAgent;
 import restaurant.MarketAgent;
+import restaurant.CashierAgent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +22,7 @@ public class RestaurantPanel extends JPanel {
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
     private MarketAgent mark = new MarketAgent("Bob");
+    private CashierAgent cash = new CashierAgent("Debra");
     private HostGui hostGui = new HostGui(host);
     private boolean running = true;
     
@@ -44,6 +46,7 @@ public class RestaurantPanel extends JPanel {
         host.startThread();
         cook.startThread();
         mark.startThread();
+        cash.startThread();
 
         setLayout(new GridLayout(1, 2, 20, 20));
         group.setLayout(new GridLayout(1, 2, 10, 10));
@@ -122,6 +125,7 @@ public class RestaurantPanel extends JPanel {
     		
     		gui.animationPanel.addGui(g);
     		w.setHost(host);
+    		w.setCashier(cash);
     		w.setGui(g);
     		w.setCook(cook);
     		host.addWaiter(w);

@@ -17,6 +17,8 @@ public class CustomerAgent extends Agent {
 	private String choice;
 	private int hungerLevel = (int)(Math.random()*4);        // determines choice and length of meal
 	private int tableNum = 1;
+	private double money = 20; // = Math.random() * 10 + 10;
+	private double owed = 0;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 
@@ -27,11 +29,11 @@ public class CustomerAgent extends Agent {
 
 	//    private boolean isHungry = false; //hack for gui
 	public enum AgentState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Choosing, Ordering};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Billing, Paying, Leaving, Choosing, Ordering};
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneLeaving, gotFood, pickAgain};
+	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneBilling, donePaying, doneLeaving, gotFood, pickAgain};
 	AgentEvent event = AgentEvent.none;
 
 	/**
@@ -89,6 +91,20 @@ public class CustomerAgent extends Agent {
 		event = AgentEvent.gotFood;
 		stateChanged();
 	}
+	
+	public void msgHereIsCheck(double amount){
+		print ("Got check for " + amount);
+		owed += amount;
+		event = AgentEvent.doneBilling;
+		stateChanged();
+	}
+	
+	public void msgHereIsChange(double amount){
+		print ("Got " + amount + " in change");
+		money += amount;
+		event = AgentEvent.donePaying;
+		stateChanged();
+	}
 
 	public void msgAnimationFinishedGoToSeat() {
 		//from animation
@@ -141,9 +157,20 @@ public class CustomerAgent extends Agent {
 		}
 
 		if (state == AgentState.Eating && event == AgentEvent.doneEating){
+			state = AgentState.Billing;
+			requestBill();
+			return true;
+		}
+
+		if (state == AgentState.Billing && event == AgentEvent.doneBilling){
+			state = AgentState.Paying;
+			payBill();
+			return true;
+		}
+		
+		if (state == AgentState.Paying && event == AgentEvent.donePaying){
 			state = AgentState.Leaving;
 			leaveTable();
-			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
 			state = AgentState.DoingNothing;
@@ -168,7 +195,6 @@ public class CustomerAgent extends Agent {
 	private void EatFood() {
 		Do("Eating Food");
 		customerGui.setOrder(choice,true);
-		wait.msgImGood();
 		//This next complicated line creates and starts a timer thread.
 		//We schedule a deadline of getHungerLevel()*1000 milliseconds.
 		//When that time elapses, it will call back to the run routine
@@ -211,6 +237,18 @@ public class CustomerAgent extends Agent {
 	private void OrderFood(){
 		print("I would like " + choice);
 		wait.msgOrderReceived(this, choice);
+	}
+	
+	private void requestBill(){
+		print ("Check please!");
+		wait.msgIWantCheck(this);
+	}
+	
+	private void payBill(){
+		if (money-owed >= 0){
+			wait.msgHereIsCash(this,owed);
+			money -= owed;
+		}
 	}
 
 	private void leaveTable() {

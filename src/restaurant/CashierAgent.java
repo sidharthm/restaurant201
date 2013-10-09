@@ -9,56 +9,31 @@ import java.util.concurrent.Semaphore;
  * Restaurant Cook Agent
  */
 //A Cook is the agent who makes food in a restaurant
-public class CookAgent extends Agent {
+public class CashierAgent extends Agent {
 	public List<Order> pendingOrders = new ArrayList<Order>();
-	public List<Order> completeOrders = new ArrayList<Order>();
 
 	private String name;
-	private Inventory myStock = new Inventory(1,1,1,1);
-	private Semaphore cooking = new Semaphore(0,true);
+	private PriceList myPrices;
 	Timer timer = new Timer();
-	
-	private MarketAgent market;
 
-	public CookAgent(String name) {
+	public CashierAgent(String name) {
 		super();
 
 		this.name = name;
+		myPrices = new PriceList(15.99,10.99,5.99,8.99);
 	}
 
 	public String getName() {
 		return name;
 	}
-
-	public List getOrders() {
-		return pendingOrders;
-	}
 	
-	public Inventory getInventory(){
-		return myStock;
-	}
-	
-	public void addMarket(MarketAgent m){
-		market = m;
-	}
 	// Messages
 
 	
-	public void msgHereIsAnOrder(WaiterAgent w, String choice, int tNum) {
-		print("Received order for " + choice);
+	public void msgHereIsBill(WaiterAgent w, String choice, int tNum) {
+		print("Received bill for table " + tNum);
 		pendingOrders.add(new Order(w,choice, tNum));
 		stateChanged();
-	}
-	
-	public void msgFoodDelivered(String o, int n){
-		print("Received delivery of " + n + " " + o);
-		int num = myStock.getStock(o);
-		num += n;
-		myStock.setStock(o,num);
-	}
-	
-	public void msgNoDelivery(){
-		print("Switching markets");
 	}
 
 	/**
@@ -66,14 +41,8 @@ public class CookAgent extends Agent {
 	 */
 	protected boolean pickAndExecuteAnAction() {
 		if (!(pendingOrders.isEmpty())){
-			CookOrder(pendingOrders.get(0));
+			CalculateBill(pendingOrders.get(0));
 			pendingOrders.remove(0);
-			return true;
-		} else if (!completeOrders.isEmpty()){
-			Order send = completeOrders.get(0);
-			send.getWaiter().msgOrderReady(send.getMeal(),send.getTable());
-			send = null;
-			completeOrders.remove(0);
 			return true;
 		}
 		return false;
@@ -83,6 +52,10 @@ public class CookAgent extends Agent {
 	}
 
 	// Actions
+	private void CalculateBill(Order o){
+		double value = myPrices.compute(o.getMeal());
+		o.getWaiter().msgHereIsTheBill(value, o.getTable());
+	}
 	//utilities
 
 	private class Order{
@@ -108,5 +81,23 @@ public class CookAgent extends Agent {
 			return myW;
 		}
 	}
+	
+	private class PriceList{
+		private Map <String, Double> prices;
+		public PriceList(double a, double b, double c, double d){
+			prices = new HashMap<String,Double>();
+			prices.put("Steak", a);
+			prices.put("Chicken", b);
+			prices.put("Salad", c);
+			prices.put("Pizza", d);
+		}
+		public double compute(String o){
+			return prices.get(o);
+		}
+		public void setPrice(String o, double p){
+			prices.put(o, p);
+		}
+	}
 }
+
 
