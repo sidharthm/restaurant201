@@ -12,13 +12,14 @@ import java.util.concurrent.Semaphore;
 public class CookAgent extends Agent {
 	public List<Order> pendingOrders = new ArrayList<Order>();
 	public List<Order> completeOrders = new ArrayList<Order>();
+	public List<MarketAgent> myMarkets = new ArrayList<MarketAgent>();
 
 	private String name;
 	private Inventory myStock = new Inventory(1,1,1,1);
 	private Semaphore cooking = new Semaphore(0,true);
 	Timer timer = new Timer();
 	
-	private MarketAgent market;
+	//private MarketAgent market;
 
 	public CookAgent(String name) {
 		super();
@@ -39,7 +40,7 @@ public class CookAgent extends Agent {
 	}
 	
 	public void addMarket(MarketAgent m){
-		market = m;
+		myMarkets.add(m);
 	}
 	// Messages
 
@@ -59,6 +60,9 @@ public class CookAgent extends Agent {
 	
 	public void msgNoDelivery(){
 		print("Switching markets");
+		MarketAgent m = myMarkets.get(0);
+		myMarkets.remove(0);
+		myMarkets.add(m);
 	}
 
 	/**
@@ -70,10 +74,7 @@ public class CookAgent extends Agent {
 			pendingOrders.remove(0);
 			return true;
 		} else if (!completeOrders.isEmpty()){
-			Order send = completeOrders.get(0);
-			send.getWaiter().msgOrderReady(send.getMeal(),send.getTable());
-			send = null;
-			completeOrders.remove(0);
+			sendOrder();
 			return true;
 		}
 		return false;
@@ -106,7 +107,7 @@ public class CookAgent extends Agent {
 					print("Done cooking current meal");
 					completeOrders.add(new Order(temp.getWaiter(), temp.getMeal(),temp.getTable()));
 					if (myStock.getStock(temp.getMeal()) <= 2){
-						market.msgInventoryLow(CookAgent.this, temp.getMeal());
+						myMarkets.get(0).msgInventoryLow(CookAgent.this, temp.getMeal());
 					}
 					stateChanged();
 				}
@@ -116,7 +117,13 @@ public class CookAgent extends Agent {
 			print("We're out of " + o.getMeal());
 			o.getWaiter().msgOutOfChoice(o.getMeal());
 		}
-			//completeOrders.add(new Order(o.getWaiter(), o.getMeal(),o.getTable()));
+	}
+	
+	private void sendOrder(){
+		Order send = completeOrders.get(0);
+		send.getWaiter().msgOrderReady(send.getMeal(),send.getTable());
+		send = null;
+		completeOrders.remove(0);
 	}
 	//utilities
 

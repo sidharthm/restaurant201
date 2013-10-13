@@ -118,19 +118,10 @@ public class HostAgent extends Agent {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
 					if (!availableWaiters.isEmpty()){
-						print("Found waiter for " + waitingCustomers.get(0));
-						table.setOccupant(waitingCustomers.get(0));
-						waitingCustomers.get(0).setWaiter(availableWaiters.get(0));
-						availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
-						busyWaiters.add(availableWaiters.get(0));
-						availableWaiters.remove(0);
-						waitingCustomers.remove(0);
+						availableAdd(table);
 						return true;//return true to the abstract agent to reinvoke the scheduler.
 					} else if (!busyWaiters.isEmpty()){
-						print("Couldn't find available waiter, adding " + waitingCustomers.get(0));
-						waitingCustomers.get(0).setWaiter(busyWaiters.get(0));
-						busyWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), table.getNumber());//action
-						waitingCustomers.remove(0);
+						busyAdd(table);
 					}
 				}
 			}
@@ -140,6 +131,22 @@ public class HostAgent extends Agent {
 		//we have tried all our rules and found
 		//nothing to do. So return false to main loop of abstract agent
 		//and wait.
+	}
+	//Actions
+	private void availableAdd(Table t){
+		print("Found waiter for " + waitingCustomers.get(0));
+		t.setOccupant(waitingCustomers.get(0));
+		waitingCustomers.get(0).setWaiter(availableWaiters.get(0));
+		availableWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), t.getNumber());//action
+		busyWaiters.add(availableWaiters.get(0));
+		availableWaiters.remove(0);
+		waitingCustomers.remove(0);
+	}
+	private void busyAdd(Table t){
+		print("Couldn't find available waiter, adding " + waitingCustomers.get(0));
+		waitingCustomers.get(0).setWaiter(busyWaiters.get(0));
+		busyWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), t.getNumber());//action
+		waitingCustomers.remove(0);
 	}
 
 	//utilities

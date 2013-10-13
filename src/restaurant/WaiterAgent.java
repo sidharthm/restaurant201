@@ -150,10 +150,13 @@ public class WaiterAgent extends Agent {
 		if (customer.getCustomer() == cust){
 			print(cust + " leaving table " + cust.getTableNum());
 			customer.setState(CustState.Leaving);
+			host.msgTableCleared(this,customer.getTable(),customers.size());
 		} else {
 			for (myCustomer m: customers){
-				if (m.getCustomer() == cust)
+				if (m.getCustomer() == cust){
 					m.setState(CustState.Leaving);
+					host.msgTableCleared(this,m.getTable(),customers.size());
+				}
 			}
 		}
 		stateChanged();
@@ -207,12 +210,10 @@ public class WaiterAgent extends Agent {
 			} else if (customer.getState() == CustState.Done){
 				LeaveTable();
 			} else if (customer.getState() == CustState.Leaving){
-				host.msgTableCleared(this,customer.getTable(),customers.size());
 				customers.remove(customer);
 				if (customers.isEmpty())
 					customer = null;
 				LeaveTable();
-				return true;
 			}
 			customer = m;
 		}
@@ -220,6 +221,7 @@ public class WaiterAgent extends Agent {
 			goOnBreak();
 			return true;
 		}
+		LeaveTable();
 		return false;
 	}
 
@@ -237,6 +239,8 @@ public class WaiterAgent extends Agent {
 				e.printStackTrace();
 			}
 			customer.setState(CustState.Seated);
+		} else {
+			LeaveTable();
 		}
 	}
 	

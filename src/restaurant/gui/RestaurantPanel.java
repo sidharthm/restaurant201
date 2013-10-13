@@ -22,6 +22,7 @@ public class RestaurantPanel extends JPanel {
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
     private MarketAgent mark = new MarketAgent("Bob");
+    private MarketAgent mark2 =  new MarketAgent("Sarah");
     private CashierAgent cash = new CashierAgent("Debra");
     private HostGui hostGui = new HostGui(host);
     private boolean running = true;
@@ -41,11 +42,13 @@ public class RestaurantPanel extends JPanel {
         this.gui = gui;
         host.setGui(hostGui);
         cook.addMarket(mark);
+        cook.addMarket(mark2);
 
         gui.animationPanel.addGui(hostGui);
         host.startThread();
         cook.startThread();
         mark.startThread();
+        mark2.startThread();
         cash.startThread();
 
         setLayout(new GridLayout(1, 2, 20, 20));
