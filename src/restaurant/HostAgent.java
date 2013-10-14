@@ -84,7 +84,7 @@ public class HostAgent extends Agent {
 	}
 	
 	public void msgIWantABreak(WaiterAgent w){
-		if (availableWaiters.size() > 1 || busyWaiters.size() > 1){
+		if (availableWaiters.size() > 0 || busyWaiters.size() > 0){
 			print ("Adding you to wait queue");
 			w.msgGoOnBreak();
 			if (availableWaiters.contains(w))
@@ -104,6 +104,7 @@ public class HostAgent extends Agent {
 	public void msgTableCleared(WaiterAgent wait, int tN, int cs) {
 		for (Table table : tables) {
 			if (table.getNumber() == tN) {
+				print("Clearing table " + tN);
 				table.setUnoccupied();
 				if (cs == 1){
 					availableWaiters.add(wait);

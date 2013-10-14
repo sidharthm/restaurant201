@@ -59,8 +59,6 @@ public class WaiterAgent extends Agent {
 		customers.add(new myCustomer(cust,tNum));
 		if (customers.size() == 1)
 				customer = customers.get(0);
-		if (name.equals("OnB"))
-			WantToBreak();
 		stateChanged();
 		
 	}
@@ -167,12 +165,10 @@ public class WaiterAgent extends Agent {
 		if (customer.getCustomer() == cust){
 			print(cust + " leaving table " + cust.getTableNum());
 			customer.setState(CustState.Leaving);
-			host.msgTableCleared(this,customer.getTable(),customers.size());
 		} else {
 			for (myCustomer m: customers){
 				if (m.getCustomer() == cust){
 					m.setState(CustState.Leaving);
-					host.msgTableCleared(this,m.getTable(),customers.size());
 				}
 			}
 		}
@@ -231,16 +227,16 @@ public class WaiterAgent extends Agent {
 			} else if (customer.getState() == CustState.Done){
 				LeaveTable();
 			} else if (customer.getState() == CustState.Leaving){
+				LeaveTable();
 				customers.remove(customer);
 				if (customers.isEmpty())
 					customer = null;
-				LeaveTable();
+				if (breakable){
+					goOnBreak();
+					return true;
+				}
 			}
 			customer = m;
-		}
-		if (breakable){
-			goOnBreak();
-			return true;
 		}
 		LeaveTable();
 		return false;
@@ -352,6 +348,12 @@ public class WaiterAgent extends Agent {
 	}
 	
 	private void LeaveTable(){
+		for(myCustomer c : customers){
+			if (c.getState() == CustState.Leaving){
+				print("table cleared");
+				host.msgTableCleared(this,c.getTable(),customers.size());
+			}
+		}
 		if (!hostGui.atStart())
 			hostGui.DoLeaveCustomer();
 	}
