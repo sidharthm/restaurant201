@@ -14,8 +14,18 @@
 > 5. Consolidate the GUI and the Animation panel into a single window
 > 6. Implement a Pause button from the GUI that pauses the entire simulation.
 
-## Interaction Diagram 
+## Interaction Diagrams
+###v2 Diagram
 ![alt text](Interaction Diagram v2.png "Interaction Diagram")
+###Waiter Break Scenario
+![alt text](waiter break.jpg "Waiter going on break")
+###Customer Reordering Scenario
+![alt text](customer reorder.jpg "Customer must reorder if cook is out of food")
+###Cook-Market Scenario
+![alt text](market cook.jpg "Cook orders food from market when out of stock")
+###Customer Payment Scenarios 
+![alt text](customer pays.jpg "Customer pays Cashier through Waiter for meal")
+![alt text](customer nopay.jpg "Customer cannot pay, remains on Cashier's owed money list")
 
 ## Agent Summary 
 

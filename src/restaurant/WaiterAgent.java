@@ -32,7 +32,6 @@ public class WaiterAgent extends Agent {
 	private myCustomer customer;
 	private CookAgent cook;
 	private CashierAgent cashier;
-	private Order currentOrder;
 
 	public WaiterGUI hostGui = null;
 
@@ -40,7 +39,6 @@ public class WaiterAgent extends Agent {
 		super();
 
 		this.name = name;
-		currentOrder = new Order("",0);
 		todaysMenu = new Menu();
 		
 	}

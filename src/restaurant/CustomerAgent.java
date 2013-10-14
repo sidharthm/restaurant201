@@ -77,10 +77,13 @@ public class CustomerAgent extends Agent {
 
 	public void gotHungry() {//from animation
 		print("I'm hungry [" + hungerLevel + "]");
-		double income = Math.random()*10 + 5;
-		money += income;
+		if (!name.equals("Poorest") && !name.equals("Poorer") && !name.equals("Poor")){
+			double income = Math.random()*10 + 5;
+			money += income;	
+		}
 		event = AgentEvent.gotHungry;
 		stateChanged();
+		
 	}
 
 	public void msgSitAtTable(Menu m) {
