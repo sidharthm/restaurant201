@@ -18,14 +18,14 @@
 ###v2 Diagram
 ![alt text](Interaction Diagram v2.png "Interaction Diagram")
 ###Waiter Break Scenario
-![alt text](waiter break.jpg "Waiter going on break")
+![alt text](waiter break.JPG "Waiter going on break")
 ###Customer Reordering Scenario
-![alt text](customer reorder.jpg "Customer must reorder if cook is out of food")
+![alt text](customer reorder.JPG "Customer must reorder if cook is out of food")
 ###Cook-Market Scenario
-![alt text](market cook.jpg "Cook orders food from market when out of stock")
+![alt text](market cook.JPG "Cook orders food from market when out of stock")
 ###Customer Payment Scenarios 
-![alt text](customer pays.jpg "Customer pays Cashier through Waiter for meal")
-![alt text](customer nopay.jpg "Customer cannot pay, remains on Cashier's owed money list")
+![alt text](customer pays.JPG "Customer pays Cashier through Waiter for meal")
+![alt text](customer nopay.JPG "Customer cannot pay, remains on Cashier's owed money list")
 
 ## Agent Summary 
 
