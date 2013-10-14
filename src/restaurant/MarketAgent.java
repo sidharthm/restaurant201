@@ -41,7 +41,7 @@ public class MarketAgent extends Agent {
 		stateChanged();
 	}
 	
-
+  
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */

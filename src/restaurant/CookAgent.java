@@ -137,7 +137,7 @@ public class CookAgent extends Agent {
 		send = null;
 		completeOrders.remove(0);
 	}
-	
+	  
 	private void reStock(String food){
 		myMarkets.get(0).msgInventoryLow(this, food);
 	}
