@@ -21,9 +21,9 @@ public class RestaurantPanel extends JPanel {
     //Host, cook, waiters and customers
     private HostAgent host = new HostAgent("Kyle");
     private CookAgent cook = new CookAgent("Mark");
-    private MarketAgent mark = new MarketAgent("Bob");
-    private MarketAgent mark2 =  new MarketAgent("Sarah");
-    private MarketAgent mark3 = new MarketAgent("Phil");
+    private MarketAgent mark = new MarketAgent("Costco");
+    private MarketAgent mark2 =  new MarketAgent("Sysco");
+    private MarketAgent mark3 = new MarketAgent("Albertsons");
     private CashierAgent cash = new CashierAgent("Debra");
     private HostGui hostGui = new HostGui(host);
     private boolean running = true;

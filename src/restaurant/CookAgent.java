@@ -63,8 +63,11 @@ public class CookAgent extends Agent {
 		MarketAgent m = myMarkets.get(0);
 		myMarkets.remove(0);
 		myMarkets.add(m);
-		print("Market is now: " + myMarkets.get(0).getName());
 		stateChanged();
+	}
+	
+	public void msgMarketOut(MarketAgent m){
+		myMarkets.remove(m);
 	}
 
 	/**

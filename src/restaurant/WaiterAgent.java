@@ -350,7 +350,6 @@ public class WaiterAgent extends Agent {
 	private void LeaveTable(){
 		for(myCustomer c : customers){
 			if (c.getState() == CustState.Leaving){
-				print("table cleared");
 				host.msgTableCleared(this,c.getTable(),customers.size());
 			}
 		}

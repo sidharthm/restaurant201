@@ -101,6 +101,15 @@ public class MarketAgent extends Agent {
 			}
 			return false;
 		}
+		
+		public boolean isEmpty(){
+			boolean emp = true;
+			for (Map.Entry<String, Integer> m : stock.entrySet()){
+				if (m.getValue() > 0)
+					emp = false;
+			}
+			return emp;
+		}
 	}
 }
 
