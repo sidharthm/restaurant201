@@ -11,6 +11,7 @@ import java.util.concurrent.Semaphore;
 //A Cook is the agent who makes food in a restaurant
 public class CashierAgent extends Agent {
 	public List<Order> pendingOrders = new ArrayList<Order>();
+	public Map<CustomerAgent, Double> owingCustomers = new HashMap<CustomerAgent,Double>();
 
 	private String name;
 	private PriceList myPrices;
@@ -30,10 +31,14 @@ public class CashierAgent extends Agent {
 	// Messages
 
 	
-	public void msgHereIsBill(WaiterAgent w, String choice, int tNum) {
+	public void msgHereIsBill(WaiterAgent w, CustomerAgent c, String choice, int tNum) {
 		print("Received bill for table " + tNum);
-		pendingOrders.add(new Order(w,choice, tNum));
+		pendingOrders.add(new Order(w, c, choice, tNum));
 		stateChanged();
+	}
+	
+	public void msgCustomerPaid(CustomerAgent c){
+		owingCustomers.remove(c);
 	}
 
 	/**
@@ -54,18 +59,25 @@ public class CashierAgent extends Agent {
 	// Actions
 	private void CalculateBill(Order o){
 		double value = myPrices.compute(o.getMeal());
+		if (owingCustomers.containsKey(o.getCustomer())){
+			print("He owes from last time");
+			value += owingCustomers.get(o.getCustomer());
+		}
+		owingCustomers.put(o.getCustomer(), value);
 		o.getWaiter().msgHereIsTheBill(value, o.getTable());
 	}
 	//utilities
 
 	private class Order{
 		private WaiterAgent myW;
+		private CustomerAgent myC;
 		private int tNum;
 		private String meal;
 		
-		public Order(WaiterAgent w, String m, int t){
+		public Order(WaiterAgent w, CustomerAgent c, String m, int t){
 			myW = w;
 			meal = m;
+			myC = c;
 			tNum = t;
 		}
 		
@@ -75,6 +87,10 @@ public class CashierAgent extends Agent {
 		
 		public int getTable(){
 			return tNum;
+		}
+		
+		public CustomerAgent getCustomer(){
+			return myC;
 		}
 		
 		public WaiterAgent getWaiter(){

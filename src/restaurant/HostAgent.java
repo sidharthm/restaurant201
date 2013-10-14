@@ -17,8 +17,8 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 3;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
-	public List<CustomerAgent> waitingCustomers
-	= new ArrayList<CustomerAgent>();
+	public List<CustomerAgent> waitingCustomers	= new ArrayList<CustomerAgent>();
+	public Map<CustomerAgent,Double> owingCustomers = new HashMap<CustomerAgent,Double>();
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
@@ -73,6 +73,16 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 	
+	public void msgCancelSeating(CustomerAgent cust){
+		if (waitingCustomers.contains(cust)){
+			waitingCustomers.remove(cust);
+		} else {
+			for (WaiterAgent w : busyWaiters){
+				w.msgRemoveCustomer(cust);
+			}
+		}
+	}
+	
 	public void msgIWantABreak(WaiterAgent w){
 		if (availableWaiters.size() > 1 || busyWaiters.size() > 1){
 			print ("Adding you to wait queue");
@@ -113,7 +123,7 @@ public class HostAgent extends Agent {
             Does there exist a table and customer, AND waiter
             so that table is unoccupied and customer is waiting. AND the waiter is not at a table
             If so seat him at the table.
-		 */		
+		 */
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
@@ -144,6 +154,7 @@ public class HostAgent extends Agent {
 	}
 	private void busyAdd(Table t){
 		print("Couldn't find available waiter, adding " + waitingCustomers.get(0));
+		t.setOccupant(waitingCustomers.get(0));
 		waitingCustomers.get(0).setWaiter(busyWaiters.get(0));
 		busyWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), t.getNumber());//action
 		waitingCustomers.remove(0);

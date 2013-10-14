@@ -15,7 +15,7 @@ public class CookAgent extends Agent {
 	public List<MarketAgent> myMarkets = new ArrayList<MarketAgent>();
 
 	private String name;
-	private Inventory myStock = new Inventory(1,1,1,1);
+	private Inventory myStock = new Inventory(0,0,0,0);
 	private Semaphore cooking = new Semaphore(0,true);
 	Timer timer = new Timer();
 	
@@ -59,16 +59,19 @@ public class CookAgent extends Agent {
 	}
 	
 	public void msgNoDelivery(){
-		print("Switching markets");
+		print("Switching to " + myMarkets.get(1).getName());
 		MarketAgent m = myMarkets.get(0);
 		myMarkets.remove(0);
 		myMarkets.add(m);
+		print("Market is now: " + myMarkets.get(0).getName());
+		stateChanged();
 	}
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */
 	protected boolean pickAndExecuteAnAction() {
+		//Dealing with Orders
 		if (!(pendingOrders.isEmpty())){
 			CookOrder(pendingOrders.get(0));
 			pendingOrders.remove(0);
@@ -76,6 +79,15 @@ public class CookAgent extends Agent {
 		} else if (!completeOrders.isEmpty()){
 			sendOrder();
 			return true;
+		} else {
+			//Inventory Check
+			String [] items = {"Steak","Chicken","Pizza","Salad"};
+			for (int i = 0; i < items.length; i++){
+				int amount = myStock.getStock(items[i]);
+				if (amount < 2){
+					reStock(items[i]);
+				}
+			}
 		}
 		return false;
 		//we have tried all our rules and found
@@ -106,9 +118,6 @@ public class CookAgent extends Agent {
 				public void run() {
 					print("Done cooking current meal");
 					completeOrders.add(new Order(temp.getWaiter(), temp.getMeal(),temp.getTable()));
-					if (myStock.getStock(temp.getMeal()) <= 2){
-						myMarkets.get(0).msgInventoryLow(CookAgent.this, temp.getMeal());
-					}
 					stateChanged();
 				}
 			},
@@ -124,6 +133,10 @@ public class CookAgent extends Agent {
 		send.getWaiter().msgOrderReady(send.getMeal(),send.getTable());
 		send = null;
 		completeOrders.remove(0);
+	}
+	
+	private void reStock(String food){
+		myMarkets.get(0).msgInventoryLow(this, food);
 	}
 	//utilities
 

@@ -33,7 +33,7 @@ public class CustomerAgent extends Agent {
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneBilling, donePaying, doneLeaving, gotFood, pickAgain};
+	{none, gotHungry, followHost, seated, doneEating, choosing, doneChoosing, doneBilling, donePaying, doneLeaving, gotFood, pickAgain, cantPay};
 	AgentEvent event = AgentEvent.none;
 
 	/**
@@ -45,6 +45,19 @@ public class CustomerAgent extends Agent {
 	public CustomerAgent(String name){
 		super();
 		this.name = name;
+		
+		if (name.equals("Rich")){
+			money = 100;
+		}
+		if (name.equals("Poor")){
+			money = 10;
+		}
+		if (name.equals("Poorer")){
+			money = 8;
+		}
+		if (name.equals("Poorest")){
+			money = 0;
+		}
 	}
 
 	/**
@@ -64,6 +77,8 @@ public class CustomerAgent extends Agent {
 
 	public void gotHungry() {//from animation
 		print("I'm hungry [" + hungerLevel + "]");
+		double income = Math.random()*10 + 5;
+		money += income;
 		event = AgentEvent.gotHungry;
 		stateChanged();
 	}
@@ -76,8 +91,6 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgWhatIsYourOrder(Menu m){
-		//event = AgentEvent.doneChoosing;
-		//print("menu updated");
 		myChoices = m;
 		stateChanged();
 	}
@@ -105,6 +118,11 @@ public class CustomerAgent extends Agent {
 		event = AgentEvent.donePaying;
 		stateChanged();
 	}
+	
+	public void msgjustLeave(){
+		event = AgentEvent.donePaying;
+		stateChanged();
+	}
 
 	public void msgAnimationFinishedGoToSeat() {
 		//from animation
@@ -128,6 +146,7 @@ public class CustomerAgent extends Agent {
 			goToRestaurant();
 			return true;
 		}
+			
 		if (state == AgentState.WaitingInRestaurant && event == AgentEvent.followHost ){
 			state = AgentState.BeingSeated;
 			SitDown();
@@ -168,7 +187,7 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		
-		if (state == AgentState.Paying && event == AgentEvent.donePaying){
+		if ((state == AgentState.Paying || state == AgentState.Choosing) && event == AgentEvent.donePaying){
 			state = AgentState.Leaving;
 			leaveTable();
 		}
@@ -185,6 +204,17 @@ public class CustomerAgent extends Agent {
 	private void goToRestaurant() {
 		Do("Going to restaurant");
 		host.msgIWantFood(this);//send our instance, so he can respond to us
+		timer.schedule(new TimerTask() {
+			public void run() {
+				if(wait == null){
+					state = AgentState.DoingNothing;
+					print("This is taking too long, I'm leaving");
+					host.msgCancelSeating(CustomerAgent.this);
+					customerGui.DoExitRestaurant();
+				}
+			}
+		},
+		5000);//how long to wait before running task
 	}
 
 	private void SitDown() {
@@ -220,15 +250,48 @@ public class CustomerAgent extends Agent {
 		print("Choosing food");
 		timer.schedule(new TimerTask() {
 			public void run() {
-				do {
-					choice = myChoices.getChoice(hungerLevel);
-					if (choice.equals("Out"))
-						hungerLevel = (int)(Math.random() * 4);
-				} while (choice.equals("Out"));
-				event = AgentEvent.doneChoosing;
-				customerGui.setOrder(choice,false);
-				wait.msgReadytoOrder(CustomerAgent.this);
-				stateChanged();
+				if (money > 5.99){
+					if (money < 8.99){
+						hungerLevel = 2;
+						choice = myChoices.getChoice(hungerLevel);
+						if (choice.equals("Out")){
+							print("Can't afford cheapest item");
+							event = AgentEvent.donePaying;
+						} else {
+							print("Ordering cheapest item");
+							event = AgentEvent.doneChoosing;
+							customerGui.setOrder(choice,false);
+							wait.msgReadytoOrder(CustomerAgent.this);
+						}
+					} else {
+						do {
+							choice = myChoices.getChoice(hungerLevel);
+							if (choice.equals("Out"))
+								hungerLevel = (int)(Math.random() * 4);
+						} while (choice.equals("Out"));
+						event = AgentEvent.doneChoosing;
+						customerGui.setOrder(choice,false);
+						wait.msgReadytoOrder(CustomerAgent.this);
+					}
+					stateChanged();
+				} 
+				else {
+					int choose = (int)(Math.random()*2);
+					if (choose != 0){
+						print("Can't afford anything");
+						event = AgentEvent.donePaying;
+					} else {
+						do {
+							choice = myChoices.getChoice(hungerLevel);
+							if (choice.equals("Out"))
+								hungerLevel = (int)(Math.random() * 4);
+						} while (choice.equals("Out"));
+						event = AgentEvent.doneChoosing;
+						customerGui.setOrder(choice,false);
+						wait.msgReadytoOrder(CustomerAgent.this);
+					}
+					stateChanged();
+				}
 			}
 		},
 		1000);
@@ -248,6 +311,9 @@ public class CustomerAgent extends Agent {
 		if (money-owed >= 0){
 			wait.msgHereIsCash(this,owed);
 			money -= owed;
+			owed = 0;
+		} else {
+			wait.msgCantPay(this,owed);
 		}
 	}
 
@@ -298,6 +364,5 @@ public class CustomerAgent extends Agent {
 			return true;
 		return false;
 	}
-	
 }
 

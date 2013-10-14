@@ -13,7 +13,6 @@ import restaurant.CookAgent.Inventory;
 public class MarketAgent extends Agent {
 	private String name;
 	private Inventory myStock;
-	private Inventory readyToDeliver;
 	
 	private ArrayList<String> delivery;
 	Timer timer = new Timer();
@@ -26,8 +25,8 @@ public class MarketAgent extends Agent {
 		this.name = name;
 		int a = (int)(Math.random()*10);
 		myStock = new Inventory(a,a,a,a);
-		readyToDeliver = new Inventory(0,0,0,0);
 		delivery = new ArrayList<String>();
+		print(a + " of all items available");
 	}
 
 	public String getName() {

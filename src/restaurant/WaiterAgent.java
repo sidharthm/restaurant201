@@ -18,7 +18,7 @@ public class WaiterAgent extends Agent {
 	private String name;
 	private boolean breakable = false;
 	private boolean onBreak = false;
-	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, WaitingForBill, WaitingForCashier, Paying, Done,Leaving, OrderAgain, None};
+	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, WaitingForBill, WaitingForCashier, Paying, Paid, NoPay, Done,Leaving, OrderAgain, None};
 	
 	private int tableNum = 0;
 	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
@@ -63,6 +63,13 @@ public class WaiterAgent extends Agent {
 			WantToBreak();
 		stateChanged();
 		
+	}
+	
+	public void msgRemoveCustomer(CustomerAgent c){
+		for (myCustomer m : customers){
+			if (m.getCustomer() == c)
+				customers.remove(m);
+		}
 	}
 	
 	public void msgReadytoOrder(CustomerAgent cust){
@@ -134,8 +141,18 @@ public class WaiterAgent extends Agent {
 		for (myCustomer m: customers){
 			if (m.getCustomer() == c){
 				m.payBill(value);
-				m.getCustomer().msgHereIsChange(0.01);
-				m.setState(CustState.Done);
+				m.setState(CustState.Paid);
+				stateChanged();
+			}
+		}
+	}
+	
+	public void msgCantPay(CustomerAgent c, double value){
+		print("Okay, pay next time");
+		for (myCustomer m : customers){
+			if (m.getCustomer() == c){
+				m.setState(CustState.NoPay);
+				stateChanged();
 			}
 		}
 	}
@@ -207,6 +224,10 @@ public class WaiterAgent extends Agent {
 			} else if (customer.getState() == CustState.Paying){
 				takeBill();
 				return true;
+			} else if (customer.getState() == CustState.Paid){
+				customerPaid();
+			} else if (customer.getState() == CustState.NoPay){
+				customerNoPay();
 			} else if (customer.getState() == CustState.Done){
 				LeaveTable();
 			} else if (customer.getState() == CustState.Leaving){
@@ -298,8 +319,9 @@ public class WaiterAgent extends Agent {
 		if (!hostGui.atStart()){
 			hostGui.DoLeaveCustomer();
 		} else{
-			cashier.msgHereIsBill(this, customer.getOrder().getMeal(), customer.getTable());
+			cashier.msgHereIsBill(this, customer.getCustomer(), customer.getOrder().getMeal(), customer.getTable());
 			customer.setState(CustState.WaitingForCashier);
+			stateChanged();
 		}
 	}
 	
@@ -313,6 +335,20 @@ public class WaiterAgent extends Agent {
 			e.printStackTrace();
 		}
 		customer.getCustomer().msgHereIsCheck(customer.getMoneyOwed());
+		stateChanged();
+	}
+	
+	private void customerPaid(){
+		customer.getCustomer().msgHereIsChange(0.01);
+		cashier.msgCustomerPaid(customer.getCustomer());
+		customer.setState(CustState.Done);
+		stateChanged();
+	}
+	
+	private void customerNoPay(){
+		customer.getCustomer().msgjustLeave();
+		customer.setState(CustState.Done);
+		stateChanged();
 	}
 	
 	private void LeaveTable(){
