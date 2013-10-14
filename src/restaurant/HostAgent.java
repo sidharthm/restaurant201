@@ -18,12 +18,14 @@ public class HostAgent extends Agent {
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
 	public List<CustomerAgent> waitingCustomers	= new ArrayList<CustomerAgent>();
+	public List<CustomerAgent> leavingCustomers = new ArrayList<CustomerAgent>();
 	public Map<CustomerAgent,Double> owingCustomers = new HashMap<CustomerAgent,Double>();
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
 	public List<WaiterAgent> availableWaiters = new ArrayList<WaiterAgent>();
 	public List<WaiterAgent> busyWaiters = new ArrayList<WaiterAgent>();
+	public List<WaiterAgent> breakWaiters = new ArrayList<WaiterAgent>();
 
 	private String name;
 	//private Semaphore atTable = new Semaphore(0,true);
@@ -77,16 +79,14 @@ public class HostAgent extends Agent {
 		if (waitingCustomers.contains(cust)){
 			waitingCustomers.remove(cust);
 		} else {
-			for (WaiterAgent w : busyWaiters){
-				w.msgRemoveCustomer(cust);
-			}
+			leavingCustomers.add(cust);
 		}
 	}
 	
 	public void msgIWantABreak(WaiterAgent w){
 		if (availableWaiters.size() > 0 || busyWaiters.size() > 0){
 			print ("Adding you to wait queue");
-			w.msgGoOnBreak();
+			breakWaiters.add(w);
 			if (availableWaiters.contains(w))
 				availableWaiters.remove(w);
 			if (busyWaiters.contains(w))
@@ -125,6 +125,12 @@ public class HostAgent extends Agent {
             so that table is unoccupied and customer is waiting. AND the waiter is not at a table
             If so seat him at the table.
 		 */
+		if (!leavingCustomers.isEmpty()){
+			clearCust();
+		}
+		if (!breakWaiters.isEmpty()){
+			breakWait();
+		}
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
@@ -159,6 +165,19 @@ public class HostAgent extends Agent {
 		waitingCustomers.get(0).setWaiter(busyWaiters.get(0));
 		busyWaiters.get(0).msgSitAtTable(waitingCustomers.get(0), t.getNumber());//action
 		waitingCustomers.remove(0);
+	}
+	
+	private void clearCust(){
+		for (CustomerAgent c : leavingCustomers){
+			for (WaiterAgent w : busyWaiters){
+				w.msgRemoveCustomer(c);
+			}
+		}
+	}
+	
+	private void breakWait(){
+		for (WaiterAgent w : breakWaiters)
+			w.msgGoOnBreak();
 	}
 
 	//utilities
