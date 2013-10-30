@@ -72,6 +72,7 @@ public class HostAgent extends Agent {
 	public void msgIWantFood(CustomerAgent cust) {
 		print ("Finding waiter for " + cust);
 		waitingCustomers.add(cust);
+		cust.setQNum(waitingCustomers.size());
 		stateChanged();
 	}
 	

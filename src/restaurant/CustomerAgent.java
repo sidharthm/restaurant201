@@ -19,6 +19,7 @@ public class CustomerAgent extends Agent implements Customer{
 	private String choice;
 	private int hungerLevel = (int)(Math.random()*4);        // determines choice and length of meal
 	private int tableNum = 1;
+	private int qNum = 0;
 	private double money = 20; // = Math.random() * 10 + 10;
 	private double owed = 0;
 	public EventLog log;
@@ -62,6 +63,14 @@ public class CustomerAgent extends Agent implements Customer{
 
 	public String getCustomerName() {
 		return name;
+	}
+	
+	public void setQNum(int q){
+		qNum = q;
+	}
+	
+	public int getQNum(){
+		return qNum;
 	}
 	// Messages
 
@@ -197,6 +206,7 @@ public class CustomerAgent extends Agent implements Customer{
 	private void goToRestaurant() {
 		Do("Going to restaurant");
 		host.msgIWantFood(this);//send our instance, so he can respond to us
+		customerGui.DoGoToWait();
 		timer.schedule(new TimerTask() {
 			public void run() {
 				if(wait == null){
