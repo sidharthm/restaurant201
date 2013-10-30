@@ -10,8 +10,8 @@ public class WaiterGUI implements Gui {
 
     private WaiterAgent agent = null;
     
-    public static final int initialX = -20;
-    public static final int initialY = -20;
+    public int initialX = 20;
+    public static final int initialY = 20;
     public static final int cookX = 450;
     public static final int cookY = 100;
 
@@ -27,6 +27,9 @@ public class WaiterGUI implements Gui {
 
     public WaiterGUI(WaiterAgent agent) {
         this.agent = agent;
+        initialX = (25*agent.getWNum())+25;
+        xPos = initialX;
+        xDestination = initialX;
         plate = "";
     }
 

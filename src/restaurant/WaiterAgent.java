@@ -22,6 +22,7 @@ public class WaiterAgent extends Agent implements Waiter{
 	public enum CustState {Waiting,Seated, Ordering, WaitingForFood, Delivering, WaitingForBill, WaitingForCashier, Paying, Paid, NoPay, Done,Leaving, OrderAgain, None};
 	
 	private int tableNum = 0;
+	private int waiterNum = 0;
 	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
 	private Menu todaysMenu;
 	private Timer breakTimer = new Timer();
@@ -36,11 +37,12 @@ public class WaiterAgent extends Agent implements Waiter{
 
 	public WaiterGUI hostGui = null;
 
-	public WaiterAgent(String name) {
+	public WaiterAgent(String name, int number) {
 		super();
 
 		this.name = name;
 		todaysMenu = new Menu();
+		waiterNum = number;
 		
 	}
 
@@ -50,6 +52,10 @@ public class WaiterAgent extends Agent implements Waiter{
 
 	public String getName() {
 		return name;
+	}
+	
+	public int getWNum(){
+		return waiterNum;
 	}
 
 	// Messages

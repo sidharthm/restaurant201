@@ -126,7 +126,7 @@ public class RestaurantPanel extends JPanel {
     		customers.add(c);
     		c.startThread();
     	} else if (type.equals("Waiters")){
-    		WaiterAgent w = new WaiterAgent(name);
+    		WaiterAgent w = new WaiterAgent(name,waiters.size());
     		WaiterGUI g = new WaiterGUI(w);
     		
     		gui.animationPanel.addGui(g);
