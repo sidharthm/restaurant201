@@ -5,16 +5,24 @@ import agent.Agent;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
+import restaurant.interfaces.Cashier;
+import restaurant.interfaces.Customer;
+import restaurant.interfaces.Waiter;
+import restaurant.test.mock.EventLog;
+import restaurant.test.mock.LoggedEvent;
+
 /**
  * Restaurant Cook Agent
  */
 //A Cook is the agent who makes food in a restaurant
-public class CashierAgent extends Agent {
+public class CashierAgent extends Agent implements Cashier{
 	public List<Order> pendingOrders = new ArrayList<Order>();
-	public Map<CustomerAgent, Double> owingCustomers = new HashMap<CustomerAgent,Double>();
+	public Map<Customer, Double> owingCustomers = new HashMap<Customer,Double>();
 
 	private String name;
 	private PriceList myPrices;
+	public EventLog log;
+	
 	Timer timer = new Timer();
 
 	public CashierAgent(String name) {
@@ -22,6 +30,7 @@ public class CashierAgent extends Agent {
 
 		this.name = name;
 		myPrices = new PriceList(15.99,10.99,5.99,8.99);
+		log = new EventLog();
 	}
 
 	public String getName() {
@@ -31,20 +40,21 @@ public class CashierAgent extends Agent {
 	// Messages
 
 	
-	public void msgHereIsBill(WaiterAgent w, CustomerAgent c, String choice, int tNum) {
+	public void msgHereIsBill(Waiter w, Customer c, String choice, int tNum) {
 		print("Received bill for table " + tNum);
+		log.add(new LoggedEvent("Received bill for table " + tNum));
 		pendingOrders.add(new Order(w, c, choice, tNum));
 		stateChanged();
 	}
 	
-	public void msgCustomerPaid(CustomerAgent c){
+	public void msgCustomerPaid(Customer c){
 		owingCustomers.remove(c);
 	}
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */
-	protected boolean pickAndExecuteAnAction() {
+	public boolean pickAndExecuteAnAction() {
 		if (!(pendingOrders.isEmpty())){
 			CalculateBill(pendingOrders.get(0));
 			pendingOrders.remove(0);
@@ -67,14 +77,18 @@ public class CashierAgent extends Agent {
 		o.getWaiter().msgHereIsTheBill(value, o.getTable());
 	}
 	//utilities
+	
+	public List<Order> getOrders(){
+		return pendingOrders;
+	}
 
 	private class Order{
-		private WaiterAgent myW;
-		private CustomerAgent myC;
+		private Waiter myW;
+		private Customer myC;
 		private int tNum;
 		private String meal;
 		
-		public Order(WaiterAgent w, CustomerAgent c, String m, int t){
+		public Order(Waiter w, Customer c, String m, int t){
 			myW = w;
 			meal = m;
 			myC = c;
@@ -89,11 +103,11 @@ public class CashierAgent extends Agent {
 			return tNum;
 		}
 		
-		public CustomerAgent getCustomer(){
+		public Customer getCustomer(){
 			return myC;
 		}
 		
-		public WaiterAgent getWaiter(){
+		public Waiter getWaiter(){
 			return myW;
 		}
 	}

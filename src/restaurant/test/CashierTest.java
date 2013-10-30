@@ -1,8 +1,8 @@
 package restaurant.test;
 
 import restaurant.CashierAgent;
-import restaurant.CashierAgent.cashierBillState;
-import restaurant.WaiterAgent.Bill;
+//import restaurant.CashierAgent.cashierBillState;
+//import restaurant.WaiterAgent.Bill;
 import restaurant.test.mock.MockCustomer;
 import restaurant.test.mock.MockWaiter;
 
@@ -22,7 +22,6 @@ public class CashierTest extends TestCase
 	CashierAgent cashier;
 	MockWaiter waiter;
 	MockCustomer customer;
-	
 	
 	/**
 	 * This method is run before each test. You can use it to instantiate the class variables
@@ -120,8 +119,6 @@ public class CashierTest extends TestCase
 		assertFalse("Cashier's scheduler should have returned false (no actions left to do), but didn't.", 
 				cashier.pickAndExecuteAnAction());
 		
-	
 	}//end one normal customer scenario
-	
 	
 }

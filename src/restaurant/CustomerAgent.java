@@ -2,6 +2,8 @@ package restaurant;
 
 import restaurant.gui.CustomerGui;
 import restaurant.gui.RestaurantGui;
+import restaurant.interfaces.Customer;
+import restaurant.test.mock.EventLog;
 import agent.Agent;
 import restaurant.WaiterAgent.Menu;
 
@@ -12,13 +14,14 @@ import java.util.TimerTask;
 /**
  * Restaurant customer agent.
  */
-public class CustomerAgent extends Agent {
+public class CustomerAgent extends Agent implements Customer{
 	private String name;
 	private String choice;
 	private int hungerLevel = (int)(Math.random()*4);        // determines choice and length of meal
 	private int tableNum = 1;
 	private double money = 20; // = Math.random() * 10 + 10;
 	private double owed = 0;
+	public EventLog log;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 
@@ -45,19 +48,6 @@ public class CustomerAgent extends Agent {
 	public CustomerAgent(String name){
 		super();
 		this.name = name;
-		
-		if (name.equals("Rich")){
-			money = 100;
-		}
-		if (name.equals("Poor")){
-			money = 10;
-		}
-		if (name.equals("Poorer")){
-			money = 8;
-		}
-		if (name.equals("Poorest")){
-			money = 0;
-		}
 	}
 
 	/**

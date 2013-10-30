@@ -3,6 +3,7 @@ package restaurant;
 import agent.Agent;
 import restaurant.CustomerAgent.AgentEvent;
 import restaurant.gui.WaiterGUI;
+import restaurant.interfaces.Waiter;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -12,7 +13,7 @@ import java.util.concurrent.Semaphore;
  */
 //A Waiter is responsible for seating customers, taking their orders, and 
 //bringing them their desired meal from the cook. 
-public class WaiterAgent extends Agent {
+public class WaiterAgent extends Agent implements Waiter{
 	
 
 	private String name;

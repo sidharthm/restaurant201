@@ -1,6 +1,7 @@
 package restaurant.test.mock;
 
 
+import restaurant.WaiterAgent.Menu;
 import restaurant.interfaces.Cashier;
 import restaurant.interfaces.Customer;
 
@@ -16,6 +17,7 @@ public class MockCustomer extends Mock implements Customer {
 	 * Reference to the Cashier under test that can be set by the unit test.
 	 */
 	public Cashier cashier;
+	private EventLog log;
 
 	public MockCustomer(String name) {
 		super(name);
@@ -23,9 +25,9 @@ public class MockCustomer extends Mock implements Customer {
 	}
 
 	@Override
-	public void HereIsYourTotal(double total) {
+	public void msgHereIsCheck(double total) {
 		log.add(new LoggedEvent("Received HereIsYourTotal from cashier. Total = "+ total));
-
+/*
 		if(this.name.toLowerCase().contains("thief")){
 			//test the non-normative scenario where the customer has no money if their name contains the string "theif"
 			cashier.IAmShort(this, 0);
@@ -38,16 +40,12 @@ public class MockCustomer extends Mock implements Customer {
 			//test the normative scenario
 			cashier.HereIsMyPayment(this, total);
 		}
+*/
 	}
 
 	@Override
-	public void HereIsYourChange(double total) {
+	public void msgHereIsChange(double total) {
 		log.add(new LoggedEvent("Received HereIsYourChange from cashier. Change = "+ total));
-	}
-
-	@Override
-	public void YouOweUs(double remaining_cost) {
-		log.add(new LoggedEvent("Received YouOweUs from cashier. Debt = "+ remaining_cost));
 	}
 
 }
