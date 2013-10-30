@@ -5,6 +5,8 @@ import agent.Agent;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
+import restaurant.gui.CookGui;
+
 /**
  * Restaurant Cook Agent
  */
@@ -16,7 +18,8 @@ public class CookAgent extends Agent {
 
 	private String name;
 	private Inventory myStock = new Inventory(0,0,0,0);
-	private Semaphore cooking = new Semaphore(0,true);
+	private Semaphore moving = new Semaphore(0,true);
+	private CookGui gui;
 	Timer timer = new Timer();
 	
 	//private MarketAgent market;
@@ -41,6 +44,10 @@ public class CookAgent extends Agent {
 	
 	public void addMarket(MarketAgent m){
 		myMarkets.add(m);
+	}
+	
+	public void setGui(CookGui g){
+		gui = g;
 	}
 	// Messages
 
@@ -68,6 +75,10 @@ public class CookAgent extends Agent {
 	
 	public void msgMarketOut(MarketAgent m){
 		myMarkets.remove(m);
+	}
+	
+	public void msgDestReached(){
+		moving.release();
 	}
 
 	/**
@@ -100,6 +111,21 @@ public class CookAgent extends Agent {
 
 	// Actions
 	private void CookOrder(Order o){
+		gui.DoCheckOrders();
+		try{
+			moving.acquire();
+		}  catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		gui.setOrder(o.getMeal(), false);
+		gui.DoGoToGrill();
+		try{
+			moving.acquire();
+		}  catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (myStock.useStock(o.getMeal())){
 			final Order temp = o;
 			int timeToRun = 0;
@@ -117,9 +143,20 @@ public class CookAgent extends Agent {
 					timeToRun = 4000;
 					break;
 			}
+
+			final String temp2 = o.getMeal();
 			timer.schedule(new TimerTask() {
 				public void run() {
 					print("Done cooking current meal");
+					gui.setOrder(temp2, true);
+					gui.DoCheckOrders();
+					try{
+						moving.acquire();
+					}  catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					gui.DoReturnToStart();
 					completeOrders.add(new Order(temp.getWaiter(), temp.getMeal(),temp.getTable()));
 					stateChanged();
 				}

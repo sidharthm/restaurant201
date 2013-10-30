@@ -12,8 +12,8 @@ public class WaiterGUI implements Gui {
     
     public int initialX = 20;
     public static final int initialY = 20;
-    public static final int cookX = 450;
-    public static final int cookY = 100;
+    public static final int cookX = 340;
+    public static final int cookY = 20;
 
     private int xPos = initialX, yPos = initialY;//default waiter position
     private int xDestination = initialX, yDestination = initialY;//default start position
