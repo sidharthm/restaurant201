@@ -277,7 +277,6 @@ public class WaiterAgent extends Agent implements Waiter{
 				customer = m;
 			}
 		} catch (ConcurrentModificationException e){
-			//e.printStackTrace();
 			print("caught");
 			return false;
 		}
