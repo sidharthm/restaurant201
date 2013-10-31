@@ -24,7 +24,7 @@ public class CustomerGui implements Gui{
 	public static final int initialX = -40;
 	public static final int initialY = -40;
 	public int waitX = 0;
-	public int waitY = 20;
+	public int waitY = 20 + (int)(Math.random()*4)*25;
 	public static final int customerSize = 20;
 
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
@@ -33,7 +33,6 @@ public class CustomerGui implements Gui{
 		yPos = initialY;
 		xDestination = initialX;
 		yDestination = initialY;
-		waitY = 25*c.getQNum()+20;
 		order = "";
 		//maitreD = m;
 		this.gui = gui;
