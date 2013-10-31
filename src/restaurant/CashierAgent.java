@@ -16,8 +16,8 @@ import restaurant.test.mock.LoggedEvent;
  */
 //A Cook is the agent who makes food in a restaurant
 public class CashierAgent extends Agent implements Cashier{
-	public List<Order> pendingOrders = new ArrayList<Order>();
-	public Map<Customer, Double> owingCustomers = new HashMap<Customer,Double>();
+	public List<Order> pendingOrders = Collections.synchronizedList(new ArrayList<Order>());
+	public Map<Customer, Double> owingCustomers = Collections.synchronizedMap(new HashMap<Customer,Double>());
 
 	private String name;
 	private PriceList myPrices;

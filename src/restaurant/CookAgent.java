@@ -12,9 +12,9 @@ import restaurant.gui.CookGui;
  */
 //A Cook is the agent who makes food in a restaurant
 public class CookAgent extends Agent {
-	public List<Order> pendingOrders = new ArrayList<Order>();
-	public List<Order> completeOrders = new ArrayList<Order>();
-	public List<MarketAgent> myMarkets = new ArrayList<MarketAgent>();
+	public List<Order> pendingOrders = Collections.synchronizedList(new ArrayList<Order>());
+	public List<Order> completeOrders = Collections.synchronizedList(new ArrayList<Order>());
+	public List<MarketAgent> myMarkets = Collections.synchronizedList(new ArrayList<MarketAgent>());
 
 	private String name;
 	private Inventory myStock = new Inventory(0,0,0,0);

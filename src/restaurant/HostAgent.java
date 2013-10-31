@@ -17,15 +17,15 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 3;//a global for the number of tables.
 	//Notice that we implement waitingCustomers using ArrayList, but type it
 	//with List semantics.
-	public List<CustomerAgent> waitingCustomers	= new ArrayList<CustomerAgent>();
-	public List<CustomerAgent> leavingCustomers = new ArrayList<CustomerAgent>();
-	public Map<CustomerAgent,Double> owingCustomers = new HashMap<CustomerAgent,Double>();
+	public List<CustomerAgent> waitingCustomers	= Collections.synchronizedList(new ArrayList<CustomerAgent>());
+	public List<CustomerAgent> leavingCustomers = Collections.synchronizedList(new ArrayList<CustomerAgent>());
+	public Map<CustomerAgent,Double> owingCustomers = Collections.synchronizedMap(new HashMap<CustomerAgent,Double>());
 	public Collection<Table> tables;
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
-	public List<WaiterAgent> availableWaiters = new ArrayList<WaiterAgent>();
-	public List<WaiterAgent> busyWaiters = new ArrayList<WaiterAgent>();
-	public List<WaiterAgent> breakWaiters = new ArrayList<WaiterAgent>();
+	public List<WaiterAgent> availableWaiters = Collections.synchronizedList(new ArrayList<WaiterAgent>());
+	public List<WaiterAgent> busyWaiters = Collections.synchronizedList(new ArrayList<WaiterAgent>());
+	public List<WaiterAgent> breakWaiters = Collections.synchronizedList(new ArrayList<WaiterAgent>());
 
 	private String name;
 	//private Semaphore atTable = new Semaphore(0,true);
@@ -169,16 +169,20 @@ public class HostAgent extends Agent {
 	}
 	
 	private void clearCust(){
-		for (CustomerAgent c : leavingCustomers){
-			for (WaiterAgent w : busyWaiters){
-				w.msgRemoveCustomer(c);
+		synchronized(leavingCustomers){
+			for (CustomerAgent c : leavingCustomers){
+				for (WaiterAgent w : busyWaiters){
+					w.msgRemoveCustomer(c);
+				}
 			}
 		}
 	}
 	
 	private void breakWait(){
-		for (WaiterAgent w : breakWaiters)
-			w.msgGoOnBreak();
+		synchronized(breakWaiters){
+			for (WaiterAgent w : breakWaiters)
+				w.msgGoOnBreak();
+		}
 	}
 
 	//utilities

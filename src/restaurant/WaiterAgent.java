@@ -69,9 +69,13 @@ public class WaiterAgent extends Agent implements Waiter{
 	}
 	
 	public void msgRemoveCustomer(CustomerAgent c){
-		for (myCustomer m : customers){
-			if (m.getCustomer() == c)
-				customers.remove(m);
+		try{
+			for (myCustomer m : customers){
+				if (m.getCustomer() == c)
+					customers.remove(m);
+			}
+		} catch (ConcurrentModificationException e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -89,11 +93,15 @@ public class WaiterAgent extends Agent implements Waiter{
 	
 	public void msgOutOfChoice(String i){
 		todaysMenu.removeChoice(i);
-		for (myCustomer m:customers){
-			if (m.getOrder().getMeal().equals(i)){
-				print (m.getCustomer() + " needs to order again");
-				m.setState(CustState.OrderAgain);
+		try{
+			for (myCustomer m:customers){
+				if (m.getOrder().getMeal().equals(i)){
+					print (m.getCustomer() + " needs to order again");
+					m.setState(CustState.OrderAgain);
+				}
 			}
+		} catch (ConcurrentModificationException e){
+			e.printStackTrace();
 		}
 		stateChanged();
 	}
@@ -103,22 +111,30 @@ public class WaiterAgent extends Agent implements Waiter{
 			customer.getOrder().setReady();
 			customer.setState(CustState.Delivering);
 		} else {
-			for (myCustomer m :customers){
-				if (m.getTable() == tNum){
-					m.getOrder().setReady();
-					m.setState(CustState.Delivering);
+			try{
+				for (myCustomer m :customers){
+					if (m.getTable() == tNum){
+						m.getOrder().setReady();
+						m.setState(CustState.Delivering);
+					}
 				}
+			} catch (ConcurrentModificationException e){
+				e.printStackTrace();
 			}
 		}
 		stateChanged();
 	}
 	
 	public void msgIWantCheck(CustomerAgent c){
-		for (myCustomer m: customers){
-			if (m.getCustomer() == c){
-				m.setState(CustState.WaitingForBill);
-				stateChanged();
+		try {
+			for (myCustomer m: customers){
+				if (m.getCustomer() == c){
+					m.setState(CustState.WaitingForBill);
+					stateChanged();
+				}
 			}
+		} catch (ConcurrentModificationException e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -129,34 +145,46 @@ public class WaiterAgent extends Agent implements Waiter{
 			customer.setState(CustState.Paying);
 			stateChanged();
 		} else { 
-			for (myCustomer m: customers){
-				if (m.getTable() == tNum){
-					m.chargeBill(value);
-					m.setState(CustState.Paying);
-					stateChanged();
+			try{
+				for (myCustomer m: customers){
+					if (m.getTable() == tNum){
+						m.chargeBill(value);
+						m.setState(CustState.Paying);
+						stateChanged();
+					}
 				}
+			} catch (ConcurrentModificationException e){
+				e.printStackTrace();
 			}
 		}
 	}
 	
 	public void msgHereIsCash(CustomerAgent c, double value){
 		print("Got " + value + " from " + c);
-		for (myCustomer m: customers){
-			if (m.getCustomer() == c){
-				m.payBill(value);
-				m.setState(CustState.Paid);
-				stateChanged();
+		try{
+			for (myCustomer m: customers){
+				if (m.getCustomer() == c){
+					m.payBill(value);
+					m.setState(CustState.Paid);
+					stateChanged();
+				}
 			}
+		} catch (ConcurrentModificationException e){
+			e.printStackTrace();
 		}
 	}
 	
 	public void msgCantPay(CustomerAgent c, double value){
 		print("Okay, pay next time");
-		for (myCustomer m : customers){
-			if (m.getCustomer() == c){
-				m.setState(CustState.NoPay);
-				stateChanged();
+		try {
+			for (myCustomer m : customers){
+				if (m.getCustomer() == c){
+					m.setState(CustState.NoPay);
+					stateChanged();
+				}
 			}
+		} catch (ConcurrentModificationException e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -171,10 +199,14 @@ public class WaiterAgent extends Agent implements Waiter{
 			print(cust + " leaving table " + cust.getTableNum());
 			customer.setState(CustState.Leaving);
 		} else {
-			for (myCustomer m: customers){
-				if (m.getCustomer() == cust){
-					m.setState(CustState.Leaving);
+			try {
+				for (myCustomer m: customers){
+					if (m.getCustomer() == cust){
+						m.setState(CustState.Leaving);
+					}
 				}
+			} catch (ConcurrentModificationException e){
+				e.printStackTrace();
 			}
 		}
 		stateChanged();
@@ -204,44 +236,50 @@ public class WaiterAgent extends Agent implements Waiter{
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */
 	protected boolean pickAndExecuteAnAction() {
-		for (myCustomer m:customers){
-			if (onBreak)
-				return true;
-			if (customer.getState() == CustState.Waiting){
-				seatCustomer(customer.getCustomer(),customer.getTable());
-				return true;
-			} else if (customer.getState() == CustState.Seated || customer.getState() == CustState.OrderAgain){
-				getOrder();
-				return true;
-			} else if (customer.getState() == CustState.Ordering){
-				takeOrderToCook();
-				return true;
-			} else if (customer.getState() == CustState.Delivering){
-				deliverFood();
-				return true;
-			} else if (customer.getState() == CustState.WaitingForBill){
-				getBill();
-				return true;
-			} else if (customer.getState() == CustState.Paying){
-				takeBill();
-				return true;
-			} else if (customer.getState() == CustState.Paid){
-				customerPaid();
-			} else if (customer.getState() == CustState.NoPay){
-				customerNoPay();
-			} else if (customer.getState() == CustState.Done){
-				LeaveTable();
-			} else if (customer.getState() == CustState.Leaving){
-				LeaveTable();
-				customers.remove(customer);
-				if (customers.isEmpty())
-					customer = null;
-				if (breakable){
-					goOnBreak();
+		try {
+			for (myCustomer m:customers){
+				if (onBreak)
 					return true;
+				if (customer.getState() == CustState.Waiting){
+					seatCustomer(customer.getCustomer(),customer.getTable());
+					return true;
+				} else if (customer.getState() == CustState.Seated || customer.getState() == CustState.OrderAgain){
+					getOrder();
+					return true;
+				} else if (customer.getState() == CustState.Ordering){
+					takeOrderToCook();
+					return true;
+				} else if (customer.getState() == CustState.Delivering){
+					deliverFood();
+					return true;
+				} else if (customer.getState() == CustState.WaitingForBill){
+					getBill();
+					return true;
+				} else if (customer.getState() == CustState.Paying){
+					takeBill();
+					return true;
+				} else if (customer.getState() == CustState.Paid){
+					customerPaid();
+				} else if (customer.getState() == CustState.NoPay){
+					customerNoPay();
+				} else if (customer.getState() == CustState.Done){
+					LeaveTable();
+				} else if (customer.getState() == CustState.Leaving){
+					LeaveTable();
+					customers.remove(customer);
+					if (customers.isEmpty())
+						customer = null;
+					if (breakable){
+						goOnBreak();
+						return true;
+					}
 				}
+				customer = m;
 			}
-			customer = m;
+		} catch (ConcurrentModificationException e){
+			//e.printStackTrace();
+			print("caught");
+			return false;
 		}
 		LeaveTable();
 		return false;
@@ -353,10 +391,14 @@ public class WaiterAgent extends Agent implements Waiter{
 	}
 	
 	private void LeaveTable(){
-		for(myCustomer c : customers){
-			if (c.getState() == CustState.Leaving){
-				host.msgTableCleared(this,c.getTable(),customers.size());
+		try{
+			for(myCustomer c : customers){
+				if (c.getState() == CustState.Leaving){
+					host.msgTableCleared(this,c.getTable(),customers.size());
+				}
 			}
+		} catch (ConcurrentModificationException e){
+			e.printStackTrace();
 		}
 		if (!hostGui.atStart())
 			hostGui.DoLeaveCustomer();
