@@ -23,6 +23,7 @@ public class WaiterAgent extends Agent implements Waiter{
 	
 	private int tableNum = 0;
 	private int waiterNum = 0;
+	private double money = 0;
 	private ArrayList<myCustomer> customers = new ArrayList<myCustomer>();
 	private Menu todaysMenu;
 	private Timer breakTimer = new Timer();
@@ -161,6 +162,7 @@ public class WaiterAgent extends Agent implements Waiter{
 	
 	public void msgHereIsCash(CustomerAgent c, double value){
 		print("Got " + value + " from " + c);
+		money += value;
 		try{
 			for (myCustomer m: customers){
 				if (m.getCustomer() == c){
@@ -277,7 +279,6 @@ public class WaiterAgent extends Agent implements Waiter{
 				customer = m;
 			}
 		} catch (ConcurrentModificationException e){
-			print("caught");
 			return false;
 		}
 		LeaveTable();
@@ -378,7 +379,7 @@ public class WaiterAgent extends Agent implements Waiter{
 	
 	private void customerPaid(){
 		customer.getCustomer().msgHereIsChange(0.01);
-		cashier.msgCustomerPaid(customer.getCustomer());
+		cashier.msgCustomerPaid(customer.getCustomer(),money);
 		customer.setState(CustState.Done);
 		stateChanged();
 	}

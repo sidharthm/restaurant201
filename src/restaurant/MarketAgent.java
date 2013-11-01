@@ -13,11 +13,13 @@ import restaurant.CookAgent.Inventory;
 public class MarketAgent extends Agent {
 	private String name;
 	private Inventory myStock;
+	private double money;
 	
 	private ArrayList<String> delivery;
 	Timer timer = new Timer();
 	
 	private CookAgent cook;
+	private CashierAgent cashier;
 
 	public MarketAgent(String name) {
 		super();
@@ -39,6 +41,11 @@ public class MarketAgent extends Agent {
 		print("Received order to restock " + o);
 		delivery.add(o);
 		stateChanged();
+	}
+	
+	public void msgHereIsCash(String s, double val){
+		money += val;
+		print("Got money for the shipment of " + s + " now have $" + money);
 	}
 	
   
@@ -66,14 +73,19 @@ public class MarketAgent extends Agent {
 					 while (myStock.useStock(tempO) && count < 5){
 						count++;
 					}
-					if (count > 0)
+					if (count > 0){
 						cook.msgFoodDelivered(tempO, count);
-					else 
+						cashier.msgFoodDelivered(MarketAgent.this, tempO, count);
+					}else{ 
 						cook.msgNoDelivery();
+					}
 				}	
 			},2000);
 	}
 	//utilities
+	public void addCashier(CashierAgent c){
+		cashier = c;
+	}
 	private class Inventory{
 		private Map <String,Integer> stock;
 		

@@ -48,6 +48,10 @@ public class RestaurantPanel extends JPanel {
         cook.addMarket(mark2);
         cook.addMarket(mark3);
         
+        mark.addCashier(cash);
+        mark2.addCashier(cash);
+        mark3.addCashier(cash);
+        
         gui.animationPanel.addGui(cookGui);
         gui.animationPanel.addGui(hostGui);
         host.startThread();

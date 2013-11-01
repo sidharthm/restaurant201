@@ -17,9 +17,11 @@ import restaurant.test.mock.LoggedEvent;
 //A Cook is the agent who makes food in a restaurant
 public class CashierAgent extends Agent implements Cashier{
 	public List<Order> pendingOrders = Collections.synchronizedList(new ArrayList<Order>());
+	public List<MarketPayment> payments = Collections.synchronizedList(new ArrayList<MarketPayment>());
 	public Map<Customer, Double> owingCustomers = Collections.synchronizedMap(new HashMap<Customer,Double>());
 
 	private String name;
+	private double money;
 	private PriceList myPrices;
 	public EventLog log;
 	
@@ -30,6 +32,7 @@ public class CashierAgent extends Agent implements Cashier{
 
 		this.name = name;
 		myPrices = new PriceList(15.99,10.99,5.99,8.99);
+		money = (int)(100*4*Math.random()) + 50;
 		log = new EventLog();
 	}
 
@@ -47,8 +50,16 @@ public class CashierAgent extends Agent implements Cashier{
 		stateChanged();
 	}
 	
-	public void msgCustomerPaid(Customer c){
+	public void msgCustomerPaid(Customer c, double value){
 		owingCustomers.remove(c);
+		money += value;
+		print("Got money from waiter, I now have " + money);
+	}
+	
+	public void msgFoodDelivered(MarketAgent m, String it, int qty){
+		payments.add(new MarketPayment(m, it, qty));
+		print("Handling payment to market");
+		stateChanged();
 	}
 
 	/**
@@ -58,6 +69,10 @@ public class CashierAgent extends Agent implements Cashier{
 		if (!(pendingOrders.isEmpty())){
 			CalculateBill(pendingOrders.get(0));
 			pendingOrders.remove(0);
+			return true;
+		} else if (!(payments.isEmpty())){
+			ComputePayment(payments.get(0));
+			payments.remove(0);
 			return true;
 		}
 		return false;
@@ -75,6 +90,12 @@ public class CashierAgent extends Agent implements Cashier{
 		}
 		owingCustomers.put(o.getCustomer(), value);
 		o.getWaiter().msgHereIsTheBill(value, o.getTable());
+	}
+	private void ComputePayment(MarketPayment p){
+		double value = myPrices.compute(p.getItem());
+		value *= p.getQty();
+		money -= value;
+		p.getMarket().msgHereIsCash(p.getItem(), value);
 	}
 	//utilities
 	
@@ -126,6 +147,28 @@ public class CashierAgent extends Agent implements Cashier{
 		}
 		public void setPrice(String o, double p){
 			prices.put(o, p);
+		}
+	}
+	
+	private class MarketPayment{
+		private int qty;
+		private String item;
+		private MarketAgent market;
+		
+		public MarketPayment(MarketAgent agent, String i, int q){
+			qty = q;
+			item = i;
+			market = agent;
+		}
+		
+		public MarketAgent getMarket(){
+			return market;
+		}
+		public String getItem(){
+			return item;
+		}
+		public int getQty(){
+			return qty;
 		}
 	}
 }
