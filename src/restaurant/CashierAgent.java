@@ -55,6 +55,7 @@ public class CashierAgent extends Agent implements Cashier{
 		owingCustomers.remove(c);
 		money += value;
 		print("Got money from waiter, I now have " + money);
+		log.add(new LoggedEvent("Got money from waiter"));
 	}
 	
 	public void msgFoodDelivered(Market m, String it, int qty){
@@ -87,6 +88,7 @@ public class CashierAgent extends Agent implements Cashier{
 		double value = myPrices.compute(o.getMeal());
 		if (owingCustomers.containsKey(o.getCustomer())){
 			print("He owes from last time");
+			log.add(new LoggedEvent("He owes us from last time"));
 			value += owingCustomers.get(o.getCustomer());
 		}
 		owingCustomers.put(o.getCustomer(), value);

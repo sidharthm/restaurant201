@@ -3,6 +3,7 @@ package restaurant;
 import agent.Agent;
 import restaurant.CustomerAgent.AgentEvent;
 import restaurant.gui.WaiterGUI;
+import restaurant.interfaces.Customer;
 import restaurant.interfaces.Waiter;
 
 import java.util.*;
@@ -160,7 +161,7 @@ public class WaiterAgent extends Agent implements Waiter{
 		}
 	}
 	
-	public void msgHereIsCash(CustomerAgent c, double value){
+	public void msgHereIsCash(Customer c, double value){
 		print("Got " + value + " from " + c);
 		money += value;
 		try{
@@ -176,7 +177,7 @@ public class WaiterAgent extends Agent implements Waiter{
 		}
 	}
 	
-	public void msgCantPay(CustomerAgent c, double value){
+	public void msgCantPay(Customer c, double value){
 		print("Okay, pay next time");
 		try {
 			for (myCustomer m : customers){
