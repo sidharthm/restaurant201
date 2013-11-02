@@ -5,12 +5,13 @@ import agent.Agent;
 import java.util.*;
 
 import restaurant.CookAgent.Inventory;
+import restaurant.interfaces.Market;
 
 /**
  * Restaurant Market Agent
  */
 //A Market is the agent who provides food to the cook in a restaurant
-public class MarketAgent extends Agent {
+public class MarketAgent extends Agent implements Market{
 	private String name;
 	private Inventory myStock;
 	private double money;

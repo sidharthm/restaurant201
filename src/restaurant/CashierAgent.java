@@ -7,6 +7,7 @@ import java.util.concurrent.Semaphore;
 
 import restaurant.interfaces.Cashier;
 import restaurant.interfaces.Customer;
+import restaurant.interfaces.Market;
 import restaurant.interfaces.Waiter;
 import restaurant.test.mock.EventLog;
 import restaurant.test.mock.LoggedEvent;
@@ -56,7 +57,7 @@ public class CashierAgent extends Agent implements Cashier{
 		print("Got money from waiter, I now have " + money);
 	}
 	
-	public void msgFoodDelivered(MarketAgent m, String it, int qty){
+	public void msgFoodDelivered(Market m, String it, int qty){
 		payments.add(new MarketPayment(m, it, qty));
 		print("Handling payment to market");
 		stateChanged();
@@ -101,6 +102,10 @@ public class CashierAgent extends Agent implements Cashier{
 	
 	public List<Order> getOrders(){
 		return pendingOrders;
+	}
+	
+	public double getMoney(){
+		return money;
 	}
 
 	private class Order{
@@ -153,15 +158,15 @@ public class CashierAgent extends Agent implements Cashier{
 	private class MarketPayment{
 		private int qty;
 		private String item;
-		private MarketAgent market;
+		private Market market;
 		
-		public MarketPayment(MarketAgent agent, String i, int q){
+		public MarketPayment(Market agent, String i, int q){
 			qty = q;
 			item = i;
 			market = agent;
 		}
 		
-		public MarketAgent getMarket(){
+		public Market getMarket(){
 			return market;
 		}
 		public String getItem(){
