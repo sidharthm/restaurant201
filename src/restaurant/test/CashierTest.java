@@ -9,17 +9,16 @@ import junit.framework.*;
 /**
  * 
  * This class is a JUnit test class to unit test the CashierAgent's basic interaction
- * with waiters, customers, and the host.
- * It is provided as an example to students in CS201 for their unit testing lab.
+ * with waiters, customers, and the market.
  *
- * @author Monroe Ekilah
+ * @author Sid Menon
  */
 public class CashierTest extends TestCase
 {
 	//these are instantiated for each test separately via the setUp() method.
 	CashierAgent cashier;
 	MockWaiter waiter;
-	MockCustomer customer, thief;
+	MockCustomer customer, thief, customer2;
 	MockMarket market, market2;
 	
 	/**
@@ -30,13 +29,14 @@ public class CashierTest extends TestCase
 		super.setUp();		
 		cashier = new CashierAgent("cashier");		
 		customer = new MockCustomer("mockcustomer");
+		customer2 = new MockCustomer("mockcustomer2");
 		thief = new MockCustomer("thief");
 		waiter = new MockWaiter("mockwaiter");
 		market = new MockMarket("mockmarket");
 		market2 = new MockMarket("mockmarket2");
 	}	
 	/**
-	 * This tests the cashier under very simple terms: one market is ready to pay the exact bill.
+	 * This tests the cashier under very simple terms: one market needs to be paid the exact bill.
 	 */
 	public void testOneNormalMarketScenario()
 	{
@@ -70,8 +70,11 @@ public class CashierTest extends TestCase
 		assertEquals("Cashier's money should have decreased by 15.99. It didn't.", cashier.getMoney(),cash);
 		
 		assertTrue("MockMarket should have logged \"Received cash\", but it reads " + market.log.getLastLoggedEvent().toString(),market.log.containsString("Received cash"));
-	}//end one normal market scenario
+	}//end one normal market scenario	
 	
+	/**
+	 * This tests the cashier with two markets needing to be paid their respective exact bills.
+	 */
 	public void testTwoNormalMarketsScenario(){
 
 		//setUp() runs first before this test!
@@ -122,8 +125,11 @@ public class CashierTest extends TestCase
 
 	}//end two normal market scenarios
 	
+	
+	/**
+	 * This test has the cashier deal with a single customer paying for his meal in full.
+	 */
 	public void testSingleCustomerScenario(){
-		//This test has the cashier deal with a single customer paying for his meal in full.
 		//setUp() runs first before this test!
 		
 		double cash = cashier.getMoney();
@@ -170,9 +176,11 @@ public class CashierTest extends TestCase
 		assertEquals("Cashier should have 15.99 more in its money, but it doesn't.", cashier.getMoney(), cash);
 		
 	}
-	
-	public void testThiefScenario(){
-		//This test has the cashier deal with a single customer that can't pay for his meal in full. Then resolves it upon a second visit. 
+
+	/**
+	 * This test has the cashier deal with a single customer that can't pay for his meal in full. Then resolves it upon a second visit.
+	 */
+	public void testThiefScenario(){ 
 		//setUp() runs first before this test!
 		
 		double cash = cashier.getMoney();
@@ -241,7 +249,10 @@ public class CashierTest extends TestCase
 		assertEquals("Cashier's money should have increased by 26.98, but it didn't.", cashier.getMoney(),cash);
 
 	}
-	
+
+	/**
+	 * This test has the cashier deal with a single customer and a single market both messaging to have their payments handled.
+	 */
 	public void testOneMarketOneCustomerScenario(){
 		double cash = cashier.getMoney();
 		customer.waiter = waiter;
@@ -300,7 +311,7 @@ public class CashierTest extends TestCase
 		//step 4 of the test
 		assertTrue("Cashier's scheduler should have returned true (1 bill to calculate), but didn't.", cashier.pickAndExecuteAnAction());
 		
-		//check post-conditions of step 2
+		//check post-conditions of step 4
 		assertEquals("Cashier should have 0 bills in it. It doesn't.", cashier.payments.size(),0);
 		
 		cash -= 15.99;
@@ -310,4 +321,110 @@ public class CashierTest extends TestCase
 		assertTrue("MockMarket should have logged \"Received cash\", but it reads " + market.log.getLastLoggedEvent().toString(),market.log.containsString("Received cash"));
 	}
 	
+	/**
+	 * This test has the cashier deal with two customers requiring checks with a market order arriving in between  
+	 */
+	public void testTwoCustomersAndAMarket(){
+		double cash = cashier.getMoney();
+		customer.waiter = waiter;
+		customer.cashier = cashier;
+		
+		customer2.waiter = waiter;
+		customer2.cashier = cashier;
+		
+		waiter.customer = customer;
+		waiter.cashier = cashier;
+		
+		//check preconditions
+		assertEquals("Cashier should have 0 orders in it. It doesn't.",cashier.pendingOrders.size(),0);
+		assertEquals("Cashier should have 0 owingCustomers in it. It doesn't.",cashier.owingCustomers.size(),0);
+		assertEquals("Cashier should have an empty event log before the Cashier's HereIsBill is called. Instead, the Cashier's event log reads: "
+						+ cashier.log.toString(), 0, cashier.log.size());
+		
+		//step 1 of the test 
+		//msgHereIsBill(waiter,customer,choice,table)
+		cashier.msgHereIsBill(waiter, customer, "Steak", 0);
+		
+		//check post-conditions of step 1, pre-conditions of step 4
+		assertEquals("MockWaiter should have an empty event log before the Cashier's scheduler is called. Instead, the MockWaiter's event log reads: "
+				+ waiter.log.toString(), 0, waiter.log.size());
+		
+		assertEquals("MockCustomer should have an empty event log before the Cashier's scheduler is called. Instead, the MockCustomer's event log reads: "
+				+ customer.log.toString(), customer.log.size(), 0);
+		
+		assertTrue("Cashier should have \"Received bill for table 0\" in it, but it doesn't. Instead, the log reads: " + cashier.log.getLastLoggedEvent().toString(),cashier.log.containsString("Received bill for table 0"));
+		
+		assertEquals("Cashier should have 1 order in it. It doesn't.", cashier.pendingOrders.size(),1);
+		
+		//step 2 of the test
+		//msgFoodDelivered(Market, Item, Quantity)
+		cashier.msgFoodDelivered(market, "Steak", 1);//send the message from the market
+
+		//check postconditions for step 2 and preconditions for step 4
+		assertEquals("MockMarket should have an empty event log before the Cashier's scheduler is called. Instead, the MockWaiter's event log reads: "
+						+ market.log.toString(), 0, market.log.size());
+		
+		assertEquals("Cashier should have 1 bill in it. It doesn't.", cashier.payments.size(), 1);
+		
+		//step 3 of the test 
+		//msgHereIsBill(waiter,customer,choice,table)
+		cashier.msgHereIsBill(waiter, customer2, "Chicken", 1);
+		
+		//check post-conditions of step 3, pre-conditions of step 4
+		assertEquals("MockWaiter should have an empty event log before the Cashier's scheduler is called. Instead, the MockWaiter's event log reads: "
+				+ waiter.log.toString(), 0, waiter.log.size());
+		
+		assertEquals("MockCustomer should have an empty event log before the Cashier's scheduler is called. Instead, the MockCustomer's event log reads: "
+				+ customer2.log.toString(), customer2.log.size(), 0);
+		
+		assertTrue("Cashier should have \"Received bill for table 1\" in it, but it doesn't. Instead, the log reads: " + cashier.log.getLastLoggedEvent().toString(),cashier.log.containsString("Received bill for table 1"));
+		
+		assertEquals("Cashier should have 2 orders in it. It doesn't.", cashier.pendingOrders.size(),2);
+		
+		//step 4 of the test 
+		assertTrue("Cashier's scheduler should have returned true (2 orders to calculate), but didn't.", cashier.pickAndExecuteAnAction());
+		
+		//check post-conditions of step 4, pre-conditions of step 5
+		assertTrue("MockWaiter should have \"Received bill\" in its log, but it doesn't. Instead, the log reads: " + waiter.log.getLastLoggedEvent(), waiter.log.containsString("Received bill"));
+		assertTrue("MockWaiter should have \"Got money from customer\" in its log, but it doesn't. Instead, the log reads: " + waiter.log.getLastLoggedEvent(), waiter.log.containsString("Got money from customer"));
+		
+		assertTrue("MockCustomer should have \"Received HereIsYourTotal from cashier. Total = 15.99\" in its log, but it doesn't. Instead, the log reads: " + customer.log.getLastLoggedEvent(), customer.log.containsString("Received HereIsYourTotal from cashier. Total = 15.99"));
+		assertTrue("MockCustomer should have \"Received HereIsYourChange from cashier. Change = 0.01\" in its log, but it doesn't. Instead, the log reads: " + customer.log.getLastLoggedEvent(), customer.log.containsString("Received HereIsYourChange from cashier. Change = 0.01"));
+		
+		assertEquals("Cashier should have one more pending orders, but it doesn't.", cashier.pendingOrders.size(), 1);
+		assertTrue("Cashier should have \"Got money from waiter\" in its log, but it doesn't. Instead, it reads: " + cashier.log.getLastLoggedEvent(), cashier.log.containsString("Got money from waiter"));
+		assertEquals("Cashier should have no more owingCustomers, but it doesn't.", cashier.owingCustomers.size(), 0);
+		cash += 15.99;
+		assertEquals("Cashier should have 15.99 more in its money, but it doesn't.", cashier.getMoney(), cash);
+		
+		waiter.customer = customer2;
+		
+		//step 4 of the test 
+		assertTrue("Cashier's scheduler should have returned true (1 order to calculate), but didn't.", cashier.pickAndExecuteAnAction());
+		
+		//check post-conditions of step 4, pre-conditions of step 5
+		assertTrue("MockWaiter should have \"Received bill\" in its log, but it doesn't. Instead, the log reads: " + waiter.log.getLastLoggedEvent(), waiter.log.containsString("Received bill"));
+		assertTrue("MockWaiter should have \"Got money from customer\" in its log, but it doesn't. Instead, the log reads: " + waiter.log.getLastLoggedEvent(), waiter.log.containsString("Got money from customer"));
+		
+		assertTrue("MockCustomer should have \"Received HereIsYourTotal from cashier. Total = 10.99\" in its log, but it doesn't. Instead, the log reads: " + customer.log.getLastLoggedEvent(), customer2.log.containsString("Received HereIsYourTotal from cashier. Total = 10.99"));
+		assertTrue("MockCustomer should have \"Received HereIsYourChange from cashier. Change = 0.01\" in its log, but it doesn't. Instead, the log reads: " + customer.log.getLastLoggedEvent(), customer2.log.containsString("Received HereIsYourChange from cashier. Change = 0.01"));
+		
+		assertEquals("Cashier should have no more pending orders, but it does.", cashier.pendingOrders.size(), 0);
+		assertTrue("Cashier should have \"Got money from waiter\" in its log, but it doesn't. Instead, it reads: " + cashier.log.getLastLoggedEvent(), cashier.log.containsString("Got money from waiter"));
+		assertEquals("Cashier should have no more owingCustomers, but it doesn't.", cashier.owingCustomers.size(), 0);
+		cash += 10.99;
+		assertEquals("Cashier should have 10.99 more in its money, but it doesn't.", cashier.getMoney(), cash);
+				
+		//step 5 of the test
+		assertTrue("Cashier's scheduler should have returned true (1 bill to calculate), but didn't.", cashier.pickAndExecuteAnAction());
+		
+		//check post-conditions of step 5
+		assertEquals("Cashier should have 0 bills in it. It doesn't.", cashier.payments.size(),0);
+		
+		cash -= 15.99;
+		
+		assertEquals("Cashier's money should have decreased by 15.99. It didn't.", cashier.getMoney(),cash);
+		
+		assertTrue("MockMarket should have logged \"Received cash\", but it reads " + market.log.getLastLoggedEvent().toString(),market.log.containsString("Received cash"));
+	}
 }
