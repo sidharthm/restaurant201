@@ -17,4 +17,7 @@ public class MockMarket extends Mock implements Market{
 	public void msgHereIsCash(String s, double val){
 		log.add(new LoggedEvent("Received cash"));
 	}
+	public void msgNoCash(String s, double val){
+		log.add(new LoggedEvent("Received no cash"));
+	}
 }

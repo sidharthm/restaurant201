@@ -98,7 +98,13 @@ public class CashierAgent extends Agent implements Cashier{
 		double value = myPrices.compute(p.getItem());
 		value *= p.getQty();
 		money -= value;
-		p.getMarket().msgHereIsCash(p.getItem(), value);
+		if (money >= 0){
+			p.getMarket().msgHereIsCash(p.getItem(), value);
+		}else {
+			money += value;
+			p.getMarket().msgNoCash(p.getItem(), value);
+			payments.add(new MarketPayment(p.getMarket(),p.getItem(),p.getQty()));
+		}
 	}
 	//utilities
 	
@@ -108,6 +114,10 @@ public class CashierAgent extends Agent implements Cashier{
 	
 	public double getMoney(){
 		return money;
+	}
+	
+	public void setMoney(double m){
+		money = m;
 	}
 
 	private class Order{

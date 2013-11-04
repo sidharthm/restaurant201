@@ -427,4 +427,51 @@ public class CashierTest extends TestCase
 		
 		assertTrue("MockMarket should have logged \"Received cash\", but it reads " + market.log.getLastLoggedEvent().toString(),market.log.containsString("Received cash"));
 	}
+	
+	/**
+	 * This test has the cashier incapable of paying the market
+	 */
+	public void testCantPayMarket(){
+		cashier.setMoney(0);
+		double cash = cashier.getMoney();
+		
+		//check preconditions
+		assertEquals("Cashier should have 0 payments in it. It doesn't.",cashier.payments.size(), 0);		
+		assertEquals("CashierAgent should have an empty event log before the Cashier's HereIsBill is called. Instead, the Cashier's event log reads: "
+						+ cashier.log.toString(), 0, cashier.log.size());
+		
+		//step 1 of the test
+		//msgFoodDelivered(Market, Item, Quantity)
+		cashier.msgFoodDelivered(market, "Steak", 1);//send the message from the market
+
+		//check postconditions for step 1 and preconditions for step 2
+		assertEquals("MockMarket should have an empty event log before the Cashier's scheduler is called. Instead, the MockWaiter's event log reads: "
+						+ market.log.toString(), 0, market.log.size());
+		
+		assertEquals("Cashier should have 1 bill in it. It doesn't.", cashier.payments.size(), 1);
+		
+		//step 2 of the test
+		assertTrue("Cashier's scheduler should have returned true (one bill to calculate from a market), but didn't.", cashier.pickAndExecuteAnAction());
+		
+		//check post-conditions of step 2, set up conditions for step 3
+		assertEquals("Cashier should have 1 bill in it. It doesn't.", cashier.payments.size(),1);
+		
+		assertEquals("Cashier's money should not have decreased by 15.99. It did.", cashier.getMoney(),cash);
+		
+		assertTrue("MockMarket should have logged \"Received no cash\", but it reads " + market.log.getLastLoggedEvent().toString(),market.log.containsString("Received no cash"));
+		
+		cashier.setMoney(15.99);
+		
+		//step 3 of the test
+		assertTrue("Cashier's scheduler should have returned true (one bill to calculate from a market), but didn't.", cashier.pickAndExecuteAnAction());
+		
+		//check post-conditions of step 3
+		assertEquals("Cashier should have 0 bills in it. It doesn't.", cashier.payments.size(),0);
+		
+		assertEquals("Cashier's money should have decreased by 15.99. It didn't.", cashier.getMoney(),cash);
+		
+		assertTrue("MockMarket should have logged \"Received cash\", but it reads " + market.log.getLastLoggedEvent().toString(),market.log.containsString("Received cash"));
+				
+
+	}
 }

@@ -17,6 +17,7 @@ public class MarketAgent extends Agent implements Market{
 	private double money;
 	
 	private ArrayList<String> delivery;
+	private ArrayList<Double> moneyOwed;
 	Timer timer = new Timer();
 	
 	private CookAgent cook;
@@ -26,9 +27,10 @@ public class MarketAgent extends Agent implements Market{
 		super();
 
 		this.name = name;
-		int a = (int)(Math.random()*10);
+		int a = (int)(Math.random()*10) + 1;
 		myStock = new Inventory(a,a,a,a);
 		delivery = new ArrayList<String>();
+		moneyOwed = new ArrayList<Double>();
 		print(a + " of all items available");
 	}
 
@@ -46,15 +48,24 @@ public class MarketAgent extends Agent implements Market{
 	
 	public void msgHereIsCash(String s, double val){
 		money += val;
+		moneyOwed.remove(val);
 		print("Got money for the shipment of " + s + " now have $" + money);
+	}
+	
+	public void msgNoCash(String s, double val){
+		if (!moneyOwed.contains(val)){
+			moneyOwed.add(val);
+			print("Refusing to send further orders until payment of $" + val + " for " + s + " is made");
+			stateChanged();
+		}
 	}
 	
   
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
 	 */
-	protected boolean pickAndExecuteAnAction() {
-		if (!delivery.isEmpty()){
+	public boolean pickAndExecuteAnAction() {
+		if (!delivery.isEmpty() && moneyOwed.isEmpty()){
 			sendFood();
 			return true;
 		}
@@ -86,6 +97,9 @@ public class MarketAgent extends Agent implements Market{
 	//utilities
 	public void addCashier(CashierAgent c){
 		cashier = c;
+	}
+	public ArrayList<Double> getMoneyOwed(){
+		return moneyOwed;
 	}
 	private class Inventory{
 		private Map <String,Integer> stock;
