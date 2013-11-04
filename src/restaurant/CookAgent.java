@@ -19,6 +19,7 @@ public class CookAgent extends Agent {
 	private String name;
 	private Inventory myStock = new Inventory(0,0,0,0);
 	private Semaphore moving = new Semaphore(0,true);
+	private Semaphore gather = new Semaphore(0,true);
 	private CookGui gui;
 	Timer timer = new Timer();
 	
@@ -80,6 +81,9 @@ public class CookAgent extends Agent {
 	public void msgDestReached(){
 		moving.release();
 	}
+	public void msgFridgeReached(){
+		gather.release();
+	}
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.
@@ -119,6 +123,12 @@ public class CookAgent extends Agent {
 			e.printStackTrace();
 		}
 		gui.setOrder(o.getMeal(), false);
+		gui.DoGoToFridge();
+		try{
+			gather.acquire();
+		} catch (InterruptedException e){
+			e.printStackTrace();
+		}
 		gui.DoGoToGrill();
 		try{
 			moving.acquire();
